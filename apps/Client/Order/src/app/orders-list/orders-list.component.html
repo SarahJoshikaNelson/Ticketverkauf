@@ -1,0 +1,185 @@
+<div class="min-h-screen bg-gradient-to-br from-base-200 via-base-100 to-base-200 py-8 px-4">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header Section -->
+    <div class="text-center mb-12">
+      <div class="inline-block p-3 bg-primary/10 rounded-full mb-4">
+        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+        </svg>
+      </div>
+      <h1 class="text-4xl font-bold text-primary mb-3 tracking-tight">Bestellungen</h1>
+      <div class="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mt-4 rounded-full"></div>
+    </div>
+
+    <!-- Password Reset: Step 1 - Enter Email -->
+    @if (resetMode() === 'enter-email') {
+      <div class="bg-base-100 shadow-2xl rounded-2xl overflow-hidden border border-base-300/50 max-w-md mx-auto">
+        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 p-6 border-b border-base-300/30">
+          <h2 class="text-xl font-semibold text-base-content flex items-center gap-3">
+            <span class="w-6 h-6 bg-primary text-primary-content rounded-full flex items-center justify-center text-sm font-bold">🔐</span>
+            Passwort zurücksetzen
+          </h2>
+          <p class="text-sm text-base-content/60 mt-1">Wir senden Ihnen einen Code per E-Mail zu.</p>
+        </div>
+        <div class="p-6 space-y-4">
+          @if (resetError()) {
+            <div class="alert alert-error text-sm py-2">{{ resetError() }}</div>
+          }
+          <div class="form-control w-full">
+            <label class="label"><span class="label-text font-medium">E-Mail-Adresse</span></label>
+            <input type="email" placeholder="ihre@email.com"
+                   class="input input-bordered w-full h-12 text-base bg-base-100 border-2 border-base-300 focus:border-primary transition-all"
+                   [(ngModel)]="resetEmail"/>
+          </div>
+          <div class="flex gap-3 pt-2">
+            <button class="btn btn-ghost flex-1" (click)="cancelPasswordReset()">Abbrechen</button>
+            <button class="btn btn-primary flex-1" (click)="sendResetCode()" [disabled]="resetLoading()">
+              @if (resetLoading()) { <span class="loading loading-spinner loading-sm"></span> }
+              Code senden
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Password Reset: Step 2 - Enter Code + New Password -->
+    @else if (resetMode() === 'enter-code') {
+      <div class="bg-base-100 shadow-2xl rounded-2xl overflow-hidden border border-base-300/50 max-w-md mx-auto">
+        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 p-6 border-b border-base-300/30">
+          <h2 class="text-xl font-semibold text-base-content flex items-center gap-3">
+            <span class="w-6 h-6 bg-primary text-primary-content rounded-full flex items-center justify-center text-sm font-bold">✉️</span>
+            Code eingeben
+          </h2>
+          <p class="text-sm text-base-content/60 mt-1">Prüfen Sie Ihr Postfach und geben Sie den Code ein.</p>
+        </div>
+        <div class="p-6 space-y-4">
+          @if (resetError()) {
+            <div class="alert alert-error text-sm py-2">{{ resetError() }}</div>
+          }
+          <div class="form-control w-full">
+            <label class="label"><span class="label-text font-medium">Bestätigungscode (6 Stellen)</span></label>
+            <input type="text" placeholder="123456" maxlength="6"
+                   class="input input-bordered w-full h-12 text-base bg-base-100 border-2 border-base-300 focus:border-primary transition-all tracking-[0.5em] text-center font-mono"
+                   [(ngModel)]="resetCode"/>
+          </div>
+          <div class="form-control w-full">
+            <label class="label"><span class="label-text font-medium">Neues Passwort</span></label>
+            <input type="password" placeholder="Mindestens 8 Zeichen"
+                   class="input input-bordered w-full h-12 text-base bg-base-100 border-2 border-base-300 focus:border-primary transition-all"
+                   [(ngModel)]="resetNewPassword"/>
+          </div>
+          <div class="form-control w-full">
+            <label class="label"><span class="label-text font-medium">Passwort bestätigen</span></label>
+            <input type="password" placeholder="Passwort wiederholen"
+                   class="input input-bordered w-full h-12 text-base bg-base-100 border-2 border-base-300 focus:border-primary transition-all"
+                   [(ngModel)]="resetConfirmPassword"/>
+          </div>
+          <div class="flex gap-3 pt-2">
+            <button class="btn btn-ghost flex-1" (click)="cancelPasswordReset()">Abbrechen</button>
+            <button class="btn btn-primary flex-1" (click)="confirmPasswordReset()" [disabled]="resetLoading()">
+              @if (resetLoading()) { <span class="loading loading-spinner loading-sm"></span> }
+              Passwort ändern
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Main Form Card -->
+    @else {
+      <div class="bg-base-100 shadow-2xl rounded-2xl overflow-hidden border border-base-300/50 backdrop-blur-sm">
+        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 p-6 border-b border-base-300/30">
+          <h2 class="text-xl font-semibold text-base-content flex items-center gap-3">
+            <span class="w-6 h-6 bg-primary text-primary-content rounded-full flex items-center justify-center text-sm font-bold">1</span>
+            Liste
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          @if (orders() !== null) {
+            @for (order of orders(); track order) {
+              <div class="form-control w-full group" data-testid="order-card">
+                <span class="label-text font-medium text-base text-base-content/80 flex items-center gap-2">ID {{order.id}}</span>
+                <span class="label-text font-medium text-base text-base-content/80 flex items-center gap-2">Status {{order.order.status}}</span>
+                <span class="label-text font-medium text-base text-base-content/80 flex items-center gap-2">{{order.order.tickets.length}} Tickets</span>
+                <span class="label-text font-medium text-base text-base-content/80 flex items-center gap-2">{{order.order.seats.length}} Tables</span>
+              </div>
+            } @empty {
+              <div class="text-center col-span-2 p-6">
+                <p class="text-gray-500">Keine Bestellungen gefunden.</p>
+              </div>
+            }
+          } @else {
+            <div class="text-center col-span-2 p-6">
+              <p class="text-gray-500">Du bist nicht angemeldet.</p>
+            </div>
+            <button class="btn btn-xs btn-primary ml-2" (click)="studentLogin()" data-testid="orders-student-login">
+              Als Schüler anmelden
+            </button>
+            <button class="btn btn-xs btn-primary ml-2" (click)="nonStudentLogin()" data-testid="orders-non-student-login">
+              Als Nicht-Schüler anmelden
+            </button>
+
+            @if (resetSuccess()) {
+              <div class="col-span-2 alert alert-success text-sm py-2">
+                Passwort erfolgreich geändert! Bitte melden Sie sich jetzt an.
+              </div>
+            }
+
+            @if (ongoingNonStudentLogin()) {
+              <!-- Email -->
+              <div class="form-control w-full group">
+                <label class="label pb-3">
+                <span class="label-text font-medium text-base text-base-content/80 flex items-center gap-2">
+                  <svg class="w-4 h-4 text-primary/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                  </svg>
+                  E-Mail
+                </span>
+                </label>
+                <input type="email"
+                       placeholder="Geben Sie Ihre E-Mail-Adresse ein"
+                       class="input input-bordered w-full h-14 text-base bg-base-100 border-2 border-base-300 focus:border-primary focus:bg-white transition-all duration-300 group-hover:border-primary/50"
+                [(ngModel)]="emailInput"/>
+              </div>
+
+              <!-- Password -->
+              <div class="form-control w-full group">
+                <label class="label pb-3">
+                  <span class="label-text font-medium text-base text-base-content/80 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-primary/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    Passwort
+                  </span>
+                </label>
+                <input type="password"
+                       placeholder="Geben Sie Ihr Passwort ein"
+                       class="input input-bordered w-full h-14 text-base bg-base-100 border-2 border-base-300 focus:border-primary focus:bg-white transition-all duration-300 group-hover:border-primary/50"
+                [(ngModel)]="passwordInput"/>
+              </div>
+
+              @if (loginError()) {
+                <div class="col-span-2 alert alert-error text-sm py-2">{{ loginError() }}</div>
+              }
+
+              <button
+                class="btn btn-xs btn-primary ml-2"
+                (click)="completeNonStudentLogin()"
+                data-testid="orders-non-student-login-submit"
+              >
+                Nicht-Schüler Anmeldung fertigstellen
+              </button>
+
+              <!-- Forgot password link -->
+              <div class="col-span-2 text-center mt-2">
+                <button class="btn btn-link btn-xs text-base-content/50 hover:text-primary" (click)="startPasswordReset()">
+                  Passwort vergessen?
+                </button>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

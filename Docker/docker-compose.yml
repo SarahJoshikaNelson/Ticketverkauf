@@ -1,0 +1,98 @@
+services:
+  db:
+    image: postgres:17.6
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: tickettrade
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "3555:5432"
+    networks:
+      - app-network
+
+  backend:
+    image: erosklein/htl-leo-ticket-backend
+    container_name: backend
+    ports:
+      - "3080:8080"
+      - "3443:8443"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASSWORD: admin
+      DB_NAME: tickettrade
+      ADMIN_ROOT_NAME: Eros-Klein
+      ADMIN_ROOT: if210052
+      ORDER_URL: https://order.maturaball.htl-leonding.ac.at
+      SHOP_URL: https://shop.maturaball.htl-leonding.ac.at
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  web-frontend:
+    image: erosklein/ticket-system-client-web
+    container_name: frontend
+    ports:
+      - "3000:80"
+    environment:
+      FETCH_URI: http://localhost:8080
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  admin-frontend:
+    image: erosklein/ticket-system-dashboard-web
+    container_name: admin-frontend
+    ports:
+      - "3001:80"
+    environment:
+      VITE_API_Q_URL: http://localhost:8080
+      VITE_API_Q_URL_SECURE: https://localhost:8443
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  order-frontend:
+    image: erosklein/ticket-system-client-order
+    container_name: order-frontend
+    ports:
+      - "3002:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  scanner-frontend:
+    image: erosklein/ticket-system-scanner
+    container_name: scanner-frontend
+    ports:
+      - "3003:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  shop-frontend:
+    image: erosklein/ticket-system-shop-web
+    container_name: shop-frontend
+    ports:
+      - "3004:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local

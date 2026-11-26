@@ -1,0 +1,226 @@
+<div class="container mx-auto p-4 max-w-2xl">
+  <!-- Loading state -->
+  @if (loading()) {
+  <div class="flex flex-col items-center justify-center py-16">
+    <svg
+      class="animate-spin h-10 w-10 text-primary mb-4"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        class="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        stroke-width="4"
+      ></circle>
+      <path
+        class="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      ></path>
+    </svg>
+    <p class="text-gray-500">Bestelldetails werden geladen...</p>
+  </div>
+  }
+
+  <!-- Error state -->
+  @if (!loading() && error()) {
+  <div class="text-center py-8">
+    <div
+      class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4"
+    >
+      <svg
+        class="w-8 h-8 text-green-600"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M5 13l4 4L19 7"
+        ></path>
+      </svg>
+    </div>
+    <h1 class="text-2xl font-bold mb-2">Zahlung erfolgreich!</h1>
+    <p class="text-gray-500 mb-6">{{ error() }}</p>
+    <button class="btn btn-primary" (click)="goToHome()">
+      Zur Startseite
+    </button>
+  </div>
+  }
+
+  <!-- Success state with order details -->
+  @if (!loading() && !error() && session()) {
+  <div class="text-center mb-6">
+    <div
+      class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4"
+    >
+      <svg
+        class="w-8 h-8 text-green-600"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M5 13l4 4L19 7"
+        ></path>
+      </svg>
+    </div>
+    <h1 class="text-2xl font-bold mb-1">Zahlung erfolgreich!</h1>
+    <p class="text-gray-500">
+      Vielen Dank für Ihre Bestellung. Sie erhalten eine Bestätigungsmail.
+    </p>
+  </div>
+
+  <!-- Order overview card -->
+  <div class="card shadow-xl mb-4 bg-background">
+    <div class="p-6">
+      <h2 class="text-xl font-bold mb-4">Bestellübersicht</h2>
+
+      <!-- Tickets -->
+      @if (mappedTickets().length > 0) {
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-3 text-primary">Tickets</h3>
+        <div class="space-y-4">
+          @for (ticket of mappedTickets(); track ticket.type) {
+            @if (getDigitalQuantity(ticket) > 0) {
+            <div
+              class="grid grid-cols-3 gap-4 items-center border-b pb-3"
+            >
+              <div class="flex flex-col gap-1">
+                <span class="font-medium">{{
+                  getTicketTypeName(ticket.type)
+                }}</span>
+                <span class="text-sm italic text-gray-600"
+                  >Digitale Karte</span
+                >
+              </div>
+              <div class="text-center">
+                <span class="text-lg font-semibold"
+                  >{{ getDigitalQuantity(ticket) }}×</span
+                >
+              </div>
+              <div class="text-right text-lg font-bold text-gray-600">
+                {{ formatPrice(ticket.price * getDigitalQuantity(ticket)) }}
+              </div>
+            </div>
+            }
+            @if (ticket.physicalQuantity > 0) {
+            <div
+              class="grid grid-cols-3 gap-4 items-center border-b pb-3"
+            >
+              <div class="flex flex-col gap-1">
+                <span class="font-medium">{{
+                  getTicketTypeName(ticket.type)
+                }}</span>
+                <span class="text-sm italic text-gray-600"
+                  >Physische Karte</span
+                >
+              </div>
+              <div class="text-center">
+                <span class="text-lg font-semibold"
+                  >{{ ticket.physicalQuantity }}×</span
+                >
+              </div>
+              <div class="text-right text-lg font-bold text-gray-600">
+                {{ formatPrice(ticket.price * ticket.physicalQuantity) }}
+              </div>
+            </div>
+            }
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Seats -->
+      @if (getGroupedSeatsByTable().length > 0) {
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-3 text-primary">
+          Tische & Plätze
+        </h3>
+        <div class="space-y-4">
+          @for (tableGroup of getGroupedSeatsByTable(); track
+          tableGroup.tableName) {
+          <div class="grid grid-cols-3 gap-4 items-center border-b pb-3">
+            <div class="font-medium">
+              Tisch {{ tableGroup.tableName }} -
+              {{ tableGroup.seats.length }} Plätze
+            </div>
+            <div class="text-center">
+              <span class="text-lg font-semibold"
+                >{{ tableGroup.seats.length }}×</span
+              >
+            </div>
+            <div class="text-right text-lg font-bold text-gray-600">
+              {{ formatPrice(tableGroup.totalPrice) }}
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Total -->
+      <div class="mt-6 p-4 bg-base-200 rounded-lg">
+        <div class="flex justify-between font-semibold text-xl">
+          <span>Gesamt:</span>
+          <span>{{ formatPrice(getTotalPrice()) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer info card -->
+  <div class="card bg-base-100 shadow-xl mb-4">
+    <div class="p-6">
+      <h2 class="text-xl font-bold mb-4">Persönliche Informationen</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <p>
+            <span class="font-bold">Name:</span>
+            {{ session()!.customer.firstName }}
+            {{ session()!.customer.lastName }}
+          </p>
+          <p>
+            <span class="font-bold">E-Mail:</span>
+            {{ session()!.customer.mailAddress }}
+          </p>
+          <p>
+            <span class="font-bold">Telefon:</span>
+            {{ session()!.customer.phoneNumber }}
+          </p>
+        </div>
+        <div>
+          <p>
+            <span class="font-bold">Straße:</span>
+            {{ session()!.customer.street }}
+            {{ session()!.customer.streetNumber }}
+          </p>
+          <p>
+            <span class="font-bold">PLZ:</span>
+            {{ session()!.customer.zipCode }}
+          </p>
+          <p>
+            <span class="font-bold">Ort:</span>
+            {{ session()!.customer.town }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-center mt-6">
+    <button class="btn btn-primary" (click)="goToHome()">
+      Zur Startseite
+    </button>
+  </div>
+  }
+</div>

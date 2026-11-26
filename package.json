@@ -1,0 +1,38 @@
+{
+  "name": "ticket-system",
+  "private": true,
+  "packageManager": "npm@11.2.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "apps/Client/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "watch": "turbo run watch",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "e2e": "turbo run e2e --filter=@ticket-system/client-order",
+    "docker": "turbo run docker",
+    "dockerDev": "turbo run dockerDev",
+    "dockerReady": "turbo run dockerReady",
+    "localReady": "turbo run localReady",
+    "clean": "turbo run clean",
+    "docker:all": "npm run docker --workspaces",
+    "dockerDev:all": "npm run dockerDev --workspaces"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "run-script-os": "^1.1.6",
+    "turbo": "latest"
+  },
+  "dependencies": {
+    "react-qr-barcode-scanner": "^2.1.18",
+    "typescript": "5.7.2"
+  },
+  "overrides": {
+    "rxjs": "~7.8.0",
+    "@react-pdf/image": "3.0.4"
+  }
+}

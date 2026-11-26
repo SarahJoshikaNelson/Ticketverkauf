@@ -1,0 +1,22 @@
+{
+  "name": "@ticket-system/server",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "run-script-os",
+    "build:darwin:linux": "./gradlew clean build",
+    "build:win32": ".\\gradlew clean build",
+    "dev": "run-script-os",
+    "dev:darwin:linux": "./gradlew service:quarkusDev",
+    "dev:win32": ".\\gradlew service:quarkusDev",
+    "lint": "./gradlew checkstyleMain",
+    "test": "run-script-os",
+    "test:darwin:linux": "./gradlew test",
+    "test:win32": ".\\gradlew test",
+    "docker": "docker build -t erosklein/htl-leo-ticket-backend:latest . && docker push erosklein/htl-leo-ticket-backend:latest",
+    "dockerDev": "docker buildx build --platform linux/amd64 --push --progress=plain -t erosklein/htl-leo-ticket-backend:dev .",
+    "clean": "run-script-os",
+    "clean:darwin:linux": "./gradlew clean",
+    "clean:win32": ".\\gradlew clean"
+  }
+}

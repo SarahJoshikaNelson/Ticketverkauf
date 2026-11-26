@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Reservierungsbestätigung</title>
+</head>
+
+<body style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
+    <p style="font-size: 16px;"><strong>
+            {#if data.reservation.customer.isMale}
+            Sehr geehrter Herr {data.reservation.customer.lastName}!
+            {#else}
+            Sehr geehrte Frau {data.reservation.customer.lastName}!
+            {/if}
+        </strong></p>
+
+    <p>Vielen Dank für Ihre Reservierung beim {data.data.title}{#if data.data.subTitle} - {data.data.subTitle}{/if}.
+        Hiermit bestätigen wir Ihre Reservierung.</p>
+
+    {#if data.data.paymentInfo}
+    <h3>Zahlungsinformationen</h3>
+    <p>
+        {#for line in data.data.paymentInfo.split('\n')}
+        {line}<br>
+        {/for}
+    </p>
+    {/if}
+    {#if data.data.paymentText}
+    <h3>Zahlungsanweisungen</h3>
+    <p>
+        {#for line in data.data.paymentText.split('\n')}
+        {line}<br>
+        {/for}
+    </p>
+    {/if}
+
+    <hr>
+
+    <h2>Details zu Ihrem Kundenkonto</h2>
+    <h3>Rechnungsadresse</h3>
+    <p>{data.reservation.customer.firstName} {data.reservation.customer.lastName}<br>
+        {data.reservation.customer.street} {data.reservation.customer.streetNumber}<br>
+        {data.reservation.customer.zipCode} {data.reservation.customer.town}</p>
+
+    <h3>Kontaktinformationen</h3>
+    <p>E-Mail-Adresse: {data.reservation.customer.mailAddress}<br>
+        Telefonnummer: {data.reservation.customer.phoneNumber}</p>
+
+    <h2>Details Ihrer Reservierung</h2>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th style="text-align: left; border-bottom: 2px solid #666;">Artikel</th>
+                <th style="text-align: right; border-bottom: 2px solid #666;">Preis</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#each data.reservation.groupedTickets() ticketGroup}
+            <tr>
+                <td style="text-align: left;">{ticketGroup.count}x {ticketGroup.typeName}</td>
+                <td style="text-align: right;">{ticketGroup.totalPrice.formatMoney()}</td>
+            </tr>
+            {#if ticketGroup.isPhysical()}
+            <tr>
+                <td style="text-align: left;">Aufpreis Physische Version (x{ticketGroup.count})</td>
+                <td style="text-align: right;">
+                    {ticketGroup.totalAdditionalCharge(data.reservation.additionalChargeForPhysicalTickets).formatMoney()}
+                </td>
+            </tr>
+            {/if}
+            {/each}
+
+            {#each data.reservation.groupedTables() tableGroup}
+            <tr>
+                <td style="text-align: left;">{tableGroup.seatCount} Plätze am Tisch {tableGroup.tableName} in
+                    {tableGroup.roomName}</td>
+                <td style="text-align: right;">{tableGroup.totalPrice.formatMoney()}</td>
+            </tr>
+            {/each}
+            <tr>
+                <td style="text-align: left;">
+                    <hr>
+                </td>
+                <td style="text-align: right;">
+                    <hr>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: left;">Gesamt</td>
+                <td style="text-align: right;">{data.reservation.calcTotal().formatMoney()}</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
+    <br>
+    <p style="text-align: center;"><strong>Für weitere Informationen oder bei Fragen stehen wir Ihnen gerne zur
+            Verfügung.</strong></p>
+
+    <div style="background-color: #f2f2f2; text-align: center; padding: 20px;">
+        {#if data.data.organizationName || data.data.footerText || data.data.contactEmail || data.data.contactPhone ||
+        data.data.contactWebsite}
+        {#if data.data.organizationName}
+        <p style="font-size: 12px; color: #666666;"><strong>© {data.data.organizationName}</strong></p>
+        {/if}
+        {#if data.data.footerText}
+        <p style="font-size: 12px; color: #666666;">
+            {#for line in data.data.footerText.split('\n')}
+            {line}<br>
+            {/for}
+        </p>
+        {/if}
+        {#if data.data.contactEmail}
+        <p style="font-size: 12px; color: #666666;">E-Mail-Adresse:
+            <a href="mailto:{data.data.contactEmail}"
+                style="color: #1a0dab; text-decoration: none;">{data.data.contactEmail}</a>
+        </p>
+        {/if}
+        {#if data.data.contactPhone}
+        <p style="font-size: 12px; color: #666666;">Telefon: {data.data.contactPhone}</p>
+        {/if}
+        {#if data.data.contactWebsite}
+        <p style="font-size: 12px; color: #666666;">Website: <a href="{data.data.contactWebsite}"
+                style="color: #1a0dab; text-decoration: none;" target="_blank">{data.data.contactWebsite}</a></p>
+        {/if}
+        {/if}
+    </div>
+</body>
+
+</html>

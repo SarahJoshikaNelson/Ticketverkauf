@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Rechnung</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #333;
+            padding: 0;
+            margin: 0;
+            background-color: #fff;
+            font-size: 10pt;
+            text-align: center;
+        }
+
+        .invoice-box {
+            width: 180mm;
+            min-height: 277mm;
+            background-color: #fff;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .header-section img {
+            max-width: 100mm;
+            height: auto;
+            margin-bottom: 5mm;
+        }
+
+        .header-section,
+        .event-info {
+            text-align: center;
+            margin-bottom: 5mm;
+        }
+
+        .footer-section {
+            margin-top: 10mm;
+            padding-top: 5mm;
+            border-top: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .info-table,
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5mm;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .info-table th,
+        .info-table td,
+        .items-table th,
+        .items-table td {
+            border: 1px solid #ddd;
+            padding: 3mm;
+            text-align: left;
+        }
+
+        .items-table th:nth-child(2),
+        .items-table td:nth-child(2) {
+            text-align: right;
+        }
+
+        .info-table th,
+        .items-table th {
+            background-color: #f2f2f2;
+        }
+
+        .total {
+            text-align: right;
+            font-weight: bold;
+            padding-right: 5mm;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="invoice-box">
+        <div class="header-section">
+            <h1>Rechnung</h1>
+        </div>
+        <div class="event-info">
+            <h2>{dto.data.title}{#if dto.data.subTitle} - {dto.data.subTitle}{/if}</h2>
+            {#if dto.data.onDate}<p>Datum des Events: {dto.data.onDate.formatDate}</p>{/if}
+        </div>
+
+        {#if dto.data.physicalPickupInfo}
+        <div
+            style="text-align: left; margin-bottom: 5mm; padding: 5mm; border: 1px solid #ddd; background-color: #f9f9f9;">
+            <h3>Informationen zur Abholung</h3>
+            <p>
+                {#for line in dto.data.physicalPickupInfo.split('\n')}
+                {line}<br>
+                {/for}
+            </p>
+        </div>
+        {/if}
+        <table class="info-table">
+            <tbody>
+                <tr>
+                    <th>Rechnungsaussteller</th>
+                    <td>
+                        {#if dto.data.organizationName}
+                        {dto.data.organizationName}<br>
+                        {/if}
+                        {#if dto.data.organizationAddress}
+                        {dto.data.organizationAddress}<br>
+                        {/if}
+                        {#if dto.data.contactEmail}
+                        {dto.data.contactEmail}<br>
+                        {/if}
+                        {#if dto.data.contactPhone}
+                        {dto.data.contactPhone}
+                        {/if}
+                    </td>
+                </tr>
+                <tr>
+                    <th>{#if dto.customer.isMale}
+                        Rechnungsempfänger
+                        {#else}
+                        Rechnungsempfängerin
+                        {/if}</th>
+                    <td>
+                        {#if dto.customer.isMale}
+                        Herrn
+                        {#else}
+                        Frau
+                        {/if}<br>
+                        {dto.customer.firstName} {dto.customer.lastName}<br>
+                        {dto.customer.street} {dto.customer.streetNumber}<br>
+                        {dto.customer.zipCode} {dto.customer.town}<br>
+                        {#if dto.customer.schoolClass}
+                        {#if dto.customer.isMale}
+                        Schüler der Klasse {dto.customer.schoolClass}
+                        {#else}
+                        Schülerin der Klasse {dto.customer.schoolClass}
+                        {/if}
+                        {/if}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Rechnungsdatum</td>
+                    <td>{currentDate}</td>
+                </tr>
+                <tr>
+                    <td>Fortlaufende Rechnungsnummer</td>
+                    <td>{#if dto.invoiceNumber}{dto.invoiceNumber}{#else}---{/if}</td>
+                </tr>
+                <tr>
+                    <td>Bestellnummer</td>
+                    <td>{dto.id}</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Erworbene Leistung</th>
+                    <th>Einheitspreis</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {#each dto.order.groupedTickets() ticketGroup}
+                <tr>
+                    <td>{ticketGroup.count}x {ticketGroup.typeName}</td>
+                    <td>{ticketGroup.totalPrice.formatMoney()}</td>
+                </tr>
+                {#if ticketGroup.isPhysical()}
+                <tr>
+                    <td>Aufpreis Physische Version (x{ticketGroup.count})</td>
+                    <td>{ticketGroup.totalAdditionalCharge(dto.order.additionalChargeForPhysicalTickets).formatMoney()}
+                    </td>
+                </tr>
+                {/if}
+                {/each}
+
+                {#each dto.order.groupedTables() tableGroup}
+                <tr>
+                    <td>{tableGroup.seatCount} Plätze am Tisch {tableGroup.tableName}</td>
+                    <td>{tableGroup.totalPrice.formatMoney()}</td>
+                </tr>
+                {/each}
+
+                <tr>
+                    <td class="total">Zwischensumme</td>
+                    <td>{dto.order.calcTotal().formatMoney()}</td>
+                </tr>
+                <tr>
+                    <td class="total">USt (0%)</td>
+                    <td>€ 0,00</td>
+                </tr>
+                <tr>
+                    <td class="total"><strong>Gesamt</strong></td>
+                    <td><strong>{dto.order.calcTotal().formatMoney()}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+
+        <div class="footer-section">
+            <p>Vielen Dank für Ihren Einkauf!</p>
+            <p>Bei Fragen oder Problemen kontaktieren Sie uns unter:<br>
+                {#if dto.data.contactEmail}
+                <br><a style="text-decoration: none; color: black;"
+                    href="mailto:{dto.data.contactEmail}">{dto.data.contactEmail}</a>
+                {/if}
+                {#if dto.data.contactPhone}
+                <br>{dto.data.contactPhone}
+                {/if}
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

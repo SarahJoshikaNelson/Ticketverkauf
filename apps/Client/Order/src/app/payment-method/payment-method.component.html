@@ -1,0 +1,158 @@
+<!--
+<div class="max-w-4xl mx-auto">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-primary">Zahlungsmethode</h1>
+    <p class="mt-2 text-gray-600">Wählen Sie Ihre bevorzugte Zahlungsart</p>
+  </div>
+  
+  <div class="bg-base-100 shadow-xl rounded-lg overflow-hidden">
+    <form [formGroup]="paymentForm" (ngSubmit)="continueToSummary()" class="p-6">
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-4">Zahlungsart auswählen</h2>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="form-control flex-1">
+            <label class="label cursor-pointer justify-start gap-4">
+              <input type="radio" name="method" value="credit-card" formControlName="method" class="radio radio-primary" />
+              <span class="label-text text-lg">Kreditkarte</span>
+            </label>
+          </div>
+          <div class="form-control flex-1">
+            <label class="label cursor-pointer justify-start gap-4">
+              <input type="radio" name="method" value="paypal" formControlName="method" class="radio radio-primary" />
+              <span class="label-text text-lg">PayPal</span>
+            </label>
+          </div>
+          <div class="form-control flex-1">
+            <label class="label cursor-pointer justify-start gap-4">
+              <input type="radio" name="method" value="bank-transfer" formControlName="method" class="radio radio-primary" />
+              <span class="label-text text-lg">Überweisung</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+
+      <div *ngIf="paymentMethod === 'credit-card'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="form-control w-full md:col-span-2">
+          <label class="label">
+            <span class="label-text">Kartennummer</span>
+          </label>
+          <input type="text" formControlName="cardNumber" placeholder="1234 5678 9012 3456" 
+                class="input input-bordered w-full" 
+                [ngClass]="{'input-error': hasError('cardNumber', 'required')}" />
+          <label *ngIf="hasError('cardNumber', 'required')" class="label">
+            <span class="label-text-alt text-error">Kartennummer ist erforderlich</span>
+          </label>
+        </div>
+
+        <div class="form-control w-full md:col-span-2">
+          <label class="label">
+            <span class="label-text">Karteninhaber</span>
+          </label>
+          <input type="text" formControlName="cardName" placeholder="Max Mustermann" 
+                class="input input-bordered w-full" 
+                [ngClass]="{'input-error': hasError('cardName', 'required')}" />
+          <label *ngIf="hasError('cardName', 'required')" class="label">
+            <span class="label-text-alt text-error">Name des Karteninhabers ist erforderlich</span>
+          </label>
+        </div>
+
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text">Ablaufdatum</span>
+          </label>
+          <input type="text" formControlName="expiryDate" placeholder="MM/JJ" 
+                class="input input-bordered w-full" 
+                [ngClass]="{'input-error': hasError('expiryDate', 'required')}" />
+          <label *ngIf="hasError('expiryDate', 'required')" class="label">
+            <span class="label-text-alt text-error">Ablaufdatum ist erforderlich</span>
+          </label>
+        </div>
+
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text">Sicherheitscode</span>
+          </label>
+          <input type="text" formControlName="cvv" placeholder="123" 
+                class="input input-bordered w-full" 
+                [ngClass]="{'input-error': hasError('cvv', 'required')}" />
+          <label *ngIf="hasError('cvv', 'required')" class="label">
+            <span class="label-text-alt text-error">Sicherheitscode ist erforderlich</span>
+          </label>
+        </div>
+      </div>
+
+      <div *ngIf="paymentMethod === 'paypal'" class="grid grid-cols-1 gap-6">
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text">PayPal E-Mail</span>
+          </label>
+          <input type="email" formControlName="paypalEmail" placeholder="ihre.email@beispiel.de" 
+                class="input input-bordered w-full" 
+                [ngClass]="{'input-error': hasError('paypalEmail', 'required') || hasError('paypalEmail', 'email')}" />
+          <label *ngIf="hasError('paypalEmail', 'required')" class="label">
+            <span class="label-text-alt text-error">PayPal E-Mail ist erforderlich</span>
+          </label>
+          <label *ngIf="hasError('paypalEmail', 'email')" class="label">
+            <span class="label-text-alt text-error">Bitte geben Sie eine gültige E-Mail-Adresse ein</span>
+          </label>
+        </div>
+        <p class="text-sm text-gray-600">
+          Sie werden zu PayPal weitergeleitet, um Ihre Zahlung sicher abzuschließen.
+        </p>
+      </div>
+
+      <div *ngIf="paymentMethod === 'bank-transfer'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text">Bankname</span>
+          </label>
+          <input type="text" formControlName="bankName" placeholder="Ihre Bank" 
+                class="input input-bordered w-full" 
+                [ngClass]="{'input-error': hasError('bankName', 'required')}" />
+          <label *ngIf="hasError('bankName', 'required')" class="label">
+            <span class="label-text-alt text-error">Bankname ist erforderlich</span>
+          </label>
+        </div>
+
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text">Kontoinhaber</span>
+          </label>
+          <input type="text" formControlName="accountHolder" placeholder="Max Mustermann" 
+                class="input input-bordered w-full" 
+                [ngClass]="{'input-error': hasError('accountHolder', 'required')}" />
+          <label *ngIf="hasError('accountHolder', 'required')" class="label">
+            <span class="label-text-alt text-error">Name des Kontoinhabers ist erforderlich</span>
+          </label>
+        </div>
+
+        <div class="form-control w-full md:col-span-2">
+          <label class="label">
+            <span class="label-text">IBAN</span>
+          </label>
+          <input type="text" formControlName="iban" placeholder="DE89 3704 0044 0532 0130 00" 
+                class="input input-bordered w-full" 
+                [ngClass]="{'input-error': hasError('iban', 'required')}" />
+          <label *ngIf="hasError('iban', 'required')" class="label">
+            <span class="label-text-alt text-error">IBAN ist erforderlich</span>
+          </label>
+        </div>
+      </div>
+    </form>
+
+    <div class="bg-base-200 p-6 flex justify-between">
+      <button class="btn bg-transparent hover:bg-gray-100 text-primary" (click)="goBack()">Zurück</button>
+      <button class="btn btn-primary" (click)="continueToSummary()">Weiter zur Übersicht</button>
+    </div>
+  </div>
+</div>
+-->
+
+<div class="coming-soon-message text-center mt-8">
+  <h2 class="text-2xl font-bold text-primary">Zahlungsmethoden</h2>
+  <p class="mt-2 text-gray-600">Weitere Zahlungsmethoden kommen bald!</p>
+  <button class="btn bg-transparent hover:bg-gray-100 text-primary" (click)="goBack()">Zurück</button>
+  <button class="btn btn-primary mt-4" (click)="continueToSummary()">Weiter zur Übersicht</button>
+</div>
+

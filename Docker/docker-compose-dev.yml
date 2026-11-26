@@ -1,0 +1,93 @@
+services:
+  db_dev:
+    image: postgres:17.6
+    container_name: postgres-db-dev
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: tickettrade
+    ports:
+      - "5555:5432"
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+    networks:
+      - app-dev-network
+
+  backend_dev:
+    image: erosklein/htl-leo-ticket-backend:dev
+    container_name: backend-dev
+    ports:
+      - "5080:8080"
+      - "5443:8443"
+    environment:
+      DB_HOST: db_dev
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASSWORD: admin
+      DB_NAME: tickettrade
+      ADMIN_ROOT_NAME: Eros-Klein
+      ADMIN_ROOT: if210052
+      ORDER_URL: https://order.dev.ballkoenig.store
+      SHOP_URL: https://shop.dev.ballkoenig.store
+    depends_on:
+      - db_dev
+    networks:
+      - app-dev-network
+
+  web-frontend-dev:
+    image: erosklein/ticket-system-client-web:dev
+    container_name: frontend-dev
+    ports:
+      - "5000:80"
+    depends_on:
+      - backend_dev
+    networks:
+      - app-dev-network
+
+  admin-frontend-dev:
+    image: erosklein/ticket-system-dashboard-web:dev
+    container_name: admin-frontend-dev
+    ports:
+      - "5001:80"
+    depends_on:
+      - backend_dev
+    networks:
+      - app-dev-network
+
+  order-frontend-dev:
+    image: erosklein/ticket-system-client-order:dev
+    container_name: order-frontend-dev
+    ports:
+      - "5002:80"
+    depends_on:
+      - backend_dev
+    networks:
+      - app-dev-network
+    
+  scanner-frontend-dev:
+    image: erosklein/ticket-system-scanner:dev
+    container_name: scanner-frontend-dev
+    ports:
+      - "5003:80"
+    depends_on:
+      - backend_dev
+    networks:
+      - app-dev-network
+
+  shop-frontend-dev:
+    image: erosklein/ticket-system-shop-web:dev
+    container_name: shop-frontend-dev
+    ports:
+      - "5004:80"
+    depends_on:
+      - backend_dev
+    networks:
+      - app-dev-network
+
+networks:
+  app-dev-network:
+    driver: bridge
+
+volumes:
+  postgres-dev-data:
+    driver: local

@@ -1,0 +1,79 @@
+/* Input styling for non-student login */
+.input {
+  color: rgb(26, 26, 26) !important;
+  background-color: white !important;
+}
+
+/* Ensure proper text color on mobile - very important! */
+input[type="email"],
+input[type="password"] {
+  color: rgb(26, 26, 26) !important;
+  -webkit-text-fill-color: rgb(26, 26, 26) !important;
+  background-color: white !important;
+}
+
+/* Prevent autofill background from obscuring text */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: rgb(26, 26, 26) !important;
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+  color: rgb(26, 26, 26) !important;
+}
+
+/* Placeholder styling - more visible */
+input::placeholder {
+  color: rgb(156, 163, 175) !important;
+  opacity: 1 !important;
+}
+
+input::-webkit-input-placeholder {
+  color: rgb(156, 163, 175) !important;
+  opacity: 1 !important;
+}
+
+/* Improve touch targets on mobile */
+@media (max-width: 640px) {
+  .input {
+    min-height: 3.5rem;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  .btn {
+    min-height: 3.5rem;
+  }
+}
+
+/* Better focus states with ring */
+.input:focus {
+  outline: none;
+  border-color: hsl(var(--p)) !important;
+  box-shadow: 0 0 0 4px hsla(var(--p), 0.2);
+  background-color: white !important;
+}
+
+/* Smooth transitions */
+.group:hover .input {
+  border-color: hsla(var(--p), 0.6);
+}
+
+/* Ensure buttons are prominent */
+.btn-primary,
+.btn-secondary {
+  font-weight: 700;
+}
+
+/* Make sure form container is visible */
+.bg-gradient-to-br {
+  background: linear-gradient(to bottom right, var(--fallback-b2, oklch(var(--b2))), rgba(var(--fallback-b3, oklch(var(--b3))), 0.5)) !important;
+}
+
+/* Enhanced shadow for mobile visibility */
+@media (max-width: 640px) {
+  .shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+  }
+}
+
+

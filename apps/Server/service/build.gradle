@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+    id 'org.kordamp.gradle.jandex' version '0.11.0'
+}
+
+tasks.named('compileTestJava') {
+    dependsOn jandex
+}
+
+tasks.named('quarkusDependenciesBuild') {
+    dependsOn tasks.named('jandex')
+}
+
+dependencies {
+    implementation 'io.quarkus:quarkus-elytron-security-jdbc'
+    implementation 'io.quarkus:quarkus-smallrye-jwt-build'
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-resteasy-jsonb'
+    implementation 'io.quarkus:quarkus-resteasy-jackson'
+    implementation("io.quarkus:quarkus-smallrye-openapi")
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-resteasy'
+    implementation 'org.jboss.resteasy:resteasy-multipart-provider:6.2.4.Final'
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.rest-assured:rest-assured'
+    implementation 'io.quarkus:quarkus-websockets-next'
+    implementation 'io.quarkus:quarkus-vertx'
+    implementation 'io.quarkus:quarkus-hibernate-orm-panache'
+    implementation group: 'com.stripe', name: 'stripe-java', version: '26.5.1'
+
+    implementation 'io.quarkus:quarkus-oidc'
+    implementation 'io.quarkus:quarkus-smallrye-jwt'
+    implementation 'io.quarkus:quarkus-security'
+
+    implementation project(':interface')
+    implementation project(':logic')
+    implementation project(':api')
+}

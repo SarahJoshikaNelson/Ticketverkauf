@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>DeliveryConfirmation</title>
+</head>
+<body style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
+<p style="font-size: 16px;"><strong>
+        {#if dto.customer.isMale}
+            Sehr geehrter Herr {dto.customer.lastName}!
+        {#else}
+            Sehr geehrte Frau {dto.customer.lastName}!
+        {/if}
+    </strong></p>
+
+{#if dto.order.tickets.size > 0 && dto.order.tableItems != null && dto.order.tableItems.size > 0}
+    <p>Es freut uns sehr, dass Sie sich soeben Ihre reservierten Karten bei uns abgeholt haben und somit den
+        Bestellvorgang abgeschlossen haben.<br>
+        Weiters dürfen wir Sie darüber informieren, dass wir nun auch Ihre Tischreservierung final bestätigen können.
+    </p>
+{/if}
+
+{#if dto.order.tickets.size == 0 && dto.order.tableItems != null && dto.order.tableItems.size > 0}
+    <p>Es freut uns sehr, Ihnen über diesem Wege mitteilen zu dürfen, dass wir Ihre Tischreservierung nun endgültig
+        bestätigen konnten.</p>
+{/if}
+
+{#if dto.order.tickets.size > 0 && (dto.order.tableItems == null || dto.order.tableItems.size == 0)}
+    <p>Es freut uns sehr, dass Sie sich soeben Ihre reservierten Karten bei uns abgeholt haben und somit den
+        Bestellvorgang abgeschlossen haben.<br></p>
+{/if}
+
+<br>
+<p>Details zu Ihrem Kauf können Sie der zuletzt versandten Rechnung entnehmen.</p>
+<p>Wir freuen uns schon sehr auf Ihren Besuch bei unserem <strong>{dto.data.title}</strong>{#if dto.data.subTitle} - <strong>{dto.data.subTitle}</strong>{/if} {#if dto.data.onDate}am <strong>{dto.data.onDate}</strong>{/if}!</p>
+<br>
+<hr>
+<br>
+<p style="text-align: center;"><strong>Für weitere Informationen oder bei Fragen stehen wir Ihnen gerne zur
+        Verfügung.</strong></p>
+
+<div style="background-color: #f2f2f2; text-align: center; padding: 20px;">
+    {#if dto.data.organizationName || dto.data.footerText || dto.data.contactEmail || dto.data.contactPhone || dto.data.contactWebsite}
+        {#if dto.data.organizationName}
+        <p style="font-size: 12px; color: #666666;"><strong>© {dto.data.organizationName}</strong></p>
+        {/if}
+        {#if dto.data.footerText}
+        <p style="font-size: 12px; color: #666666;">
+        {#for line in dto.data.footerText.split('\n')}
+        {line}<br>
+        {/for}
+        </p>
+        {/if}
+        {#if dto.data.contactEmail}
+        <p style="font-size: 12px; color: #666666;">E-Mail-Adresse: 
+        <a href="mailto:{dto.data.contactEmail}"
+           style="color: #1a0dab; text-decoration: none;">{dto.data.contactEmail}</a>
+        </p>
+        {/if}
+        {#if dto.data.contactPhone}
+        <p style="font-size: 12px; color: #666666;">Telefon: {dto.data.contactPhone}</p>
+        {/if}
+        {#if dto.data.contactWebsite}
+        <p style="font-size: 12px; color: #666666;">Website: <a href="{dto.data.contactWebsite}"
+           style="color: #1a0dab; text-decoration: none;" target="_blank">{dto.data.contactWebsite}</a></p>
+        {/if}
+    {/if}
+</div>
+</body>
+</html>

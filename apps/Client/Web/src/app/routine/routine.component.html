@@ -1,0 +1,15 @@
+<div class="w-full shadow-md shadow-black bg-secondary h-fit py-5 flex justify-center items-center flex-col gap-2.5 group max-sm:rounded">
+  <div id="header" class="flex flex-col">
+    <h1 class="text-text font-semibold text-3xl">
+      Eventablauf
+    </h1>
+    <span class="w-3/4 max-sm:w-full group-hover:w-full h-0.5 bg-primary transition-all duration-300 rounded"></span>
+  </div>
+
+  @for (routine of routines; track $index){
+    <div class="routine w-full p-2.5 flex text-xl justify-center items-center flex-col">
+      <p class="text-primary">{{toDate(routine.start).getHours().toString().padStart(2,'0')}}:{{toDate(routine.start).getMinutes().toString().padStart(2,'0')}}</p>
+      <p class="text-center">{{routine.title}}</p>
+    </div>
+  }
+</div>

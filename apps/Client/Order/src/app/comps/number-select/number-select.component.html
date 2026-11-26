@@ -1,0 +1,28 @@
+<div class="w-full flex-1 flex">
+  <button
+    class="btn btn-sm aspect-square disabled:opacity-50 disabled:cursor-not-allowed w-6"
+    [disabled]="actualDecrementDisabled()"
+    (click)="decrement()"
+    data-testid="number-select-decrement"
+  >
+    -
+  </button>
+  <input
+    class="text-center number-select-input flex-1"
+    style="appearance: textfield"
+    type="number"
+    role="text"
+    [(ngModel)]="inputValue"
+    min="{{ min() }}"
+    max="{{ max() }}"
+    readonly
+  />
+  <button
+    class="btn btn-sm aspect-square disabled:opacity-50 disabled:cursor-not-allowed w-6"
+    [disabled]="actualIncrementDisabled()"
+    (click)="increment()"
+    data-testid="number-select-increment"
+  >
+    +
+  </button>
+</div>

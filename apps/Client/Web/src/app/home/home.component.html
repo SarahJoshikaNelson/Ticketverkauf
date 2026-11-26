@@ -1,0 +1,18 @@
+<div class="justify-center items-center h-[75vh] right-0 left-0 sm:w-full flex fixed">
+  <app-hero [color]="color" [title]="title()" [subtitle]="subtitle()" />
+</div>
+
+<div class="relative top-[75vh] flex flex-col gap-5">
+  <div class="relative">
+    <app-pointer-arrow [isActive]="arrowActive" />
+  </div>
+  <div class="max-sm:px-2">
+    <app-routine [color]="color" [routines]="schedule()" />
+  </div>
+  <div class="max-sm:px-2">
+    <app-picture-show />
+  </div>
+  <div>
+    <app-footer />
+  </div>
+</div>

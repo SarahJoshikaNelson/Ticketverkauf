@@ -1,0 +1,697 @@
+<div class="container mx-auto px-4 py-8 max-sm:py-2">
+  <div
+    class="text-center mb-8 max-sm:flex max-sm:flex-row max-sm:justify-evenly"
+  >
+    <h1 class="text-3xl font-bold text-primary max-sm:text-xl">
+      Ticketauswahl
+    </h1>
+    <p class="mt-2 text-gray-600 max-sm:hidden">
+      Wählen Sie Ihre Plätze und Tickets aus
+    </p>
+    <div
+      class="flex justify-center items-center mt-3 max-sm:mt-0 max-sm:flex-col max-sm:gap-2"
+    >
+      <!-- Remaining Tickets Badge -->
+      <div
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm max-sm:text-base rounded-full border max-sm:px-3 max-sm:py-1.5 mr-2 max-sm:mr-0"
+        [ngClass]="getRemainingTicketsBadgeClass()"
+      >
+        <svg
+          class="w-4 h-4 max-sm:w-5 max-sm:h-5"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"
+          />
+        </svg>
+        <span class="font-semibold">{{ getRemainingTickets() }}</span>
+        <span class="opacity-75">verfügbar</span>
+      </div>
+
+      <div
+        class="inline-flex items-center px-3 py-1.5 text-sm max-sm:text-base rounded-full border max-sm:px-3 max-sm:py-1.5 transition-colors gap-2"
+        [ngClass]="{
+          'border-green-500 text-green-700 bg-green-100 cursor-pointer hover:bg-green-200':
+            isLoggedIn(),
+          'border-yellow-500 text-yellow-700 bg-yellow-100': !isLoggedIn()
+        }"
+        (click)="isLoggedIn() ? logout() : null"
+      >
+        @if (isLoggedIn()) {
+        <span class="flex items-center gap-2">
+          Angemeldet
+          <span class="text-xs opacity-75">(Abmelden)</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            class="w-4 h-4"
+          >
+            <path
+              fill="currentColor"
+              d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h6q.425 0 .713.288T12 4t-.288.713T11 5H5v14h6q.425 0 .713.288T12 20t-.288.713T11 21zm12.175-8H10q-.425 0-.712-.288T9 12t.288-.712T10 11h7.175L15.3 9.125q-.275-.275-.275-.675t.275-.7t.7-.313t.725.288L20.3 11.3q.3.3.3.7t-.3.7l-3.575 3.575q-.3.3-.712.288t-.713-.313q-.275-.3-.262-.712t.287-.688z"
+            />
+          </svg>
+        </span>
+        } @else {
+        <span>Nicht als Schüler angemeldet</span>
+        }
+      </div>
+      <button
+        *ngIf="!isLoggedIn()"
+        class="btn btn-xs max-sm:btn-sm btn-primary ml-2 max-sm:ml-0 max-sm:w-full"
+        (click)="login()"
+      >
+        Jetzt anmelden
+      </button>
+    </div>
+  </div>
+
+  <div class="flex flex-col lg:flex-row gap-6">
+    <!-- Interactive Seating Map (Left Side) -->
+    <div
+      class="lg:w-1/2 bg-base-100 shadow-xl rounded-lg overflow-hidden max-sm:hidden"
+    >
+      <div class="p-4 bg-primary text-white font-semibold">
+        <div class="flex justify-between items-center">
+          <span>Saalplan</span>
+          <div class="flex items-center gap-2">
+            <div class="mr-4 flex items-center gap-2">
+              <label for="layer-select" class="text-sm text-white"
+                >Ebene:</label
+              >
+              <select
+                id="layer-select"
+                class="px-2 py-1 rounded text-sm text-black"
+                (change)="onLayerSelect($any($event.target).value)"
+                [value]="selectedLayerName()"
+              >
+                <option *ngIf="layers().length === 0" value="">
+                  Keine Ebenen verfügbar
+                </option>
+                <option *ngFor="let layer of layers()" [value]="layer.name">
+                  {{ layer.name }} (Level {{ layer.level }})
+                </option>
+              </select>
+            </div>
+            <span class="text-sm">Wählen Sie Ihre Plätze</span>
+            <button
+              (click)="openTableSelectorModal()"
+              class="btn btn-sm btn-outline bg-accent"
+              title="Vergrößern"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4">
+        <div class="seating-map-container">
+          <app-table-selector
+            #inlineTableSelector
+            [selectedSeats]="selectedSeats()"
+            [selectedLayerFromParent]="selectedLayerName()"
+            (selectedSeatsChange)="
+              selectedSeats.set($event); updateSeatSelection()
+            "
+            (connectionStatusChange)="onConnectionStatusChange($event)"
+          >
+            (selectedSeatsChange)=" selectedSeats.set($event);
+            updateSeatSelection() "
+            (connectionStatusChange)="onConnectionStatusChange($event)" >
+          </app-table-selector>
+        </div>
+
+        <!-- Mobile instructions - only shown on touch devices -->
+        @if (isMobile()) {
+        <div class="mt-2 text-xs text-center text-gray-500">
+          <p>Zum Vergrößern/Verkleinern zwei Finger verwenden</p>
+          <p>Zum Verschieben mit einem Finger ziehen</p>
+        </div>
+        }
+
+        <!-- Legend -->
+        <div class="seat-legend mt-3">
+          <div class="legend-item">
+            <div
+              class="legend-dot"
+              [style.background-color]="colors.SEAT_SELECTABLE"
+            ></div>
+            <span>Verfügbar</span>
+          </div>
+          <div class="legend-item">
+            <div
+              class="legend-dot"
+              [style.background-color]="colors.SEAT_TAKEN"
+            ></div>
+            <span>bereits besetzt</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot unselectable-split"></div>
+            <span>Nicht auswählbar</span>
+          </div>
+          <div class="legend-item">
+            <div
+              class="legend-dot"
+              [style.background-color]="colors.SEAT_SELECTED"
+            ></div>
+            <span>Ausgewählt</span>
+          </div>
+        </div>
+        <div class="mt-3 text-center">
+          <div class="flex items-center justify-center gap-2 text-primary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zm-7.518-.267A8.25 8.25 0 1120.25 10.5M8.288 14.212A5.25 5.25 0 1117.25 10.5"
+              />
+            </svg>
+            <span>Tickets im Saalplan auswählen</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      (click)="openTableSelectorModal()"
+      class="lg:w-1/2 bg-base-100 shadow-xl rounded-lg overflow-hidden sm:hidden"
+    >
+      <div class="p-4 bg-primary text-white font-semibold">
+        <div class="flex justify-between items-center">
+          <span>Saalplan</span>
+          <div class="flex items-center gap-2">
+            <span class="text-sm">Wählen Sie Ihre Plätze</span>
+            <button
+              (click)="openTableSelectorModal()"
+              class="btn btn-sm btn-outline bg-accent"
+              title="Vergrößern"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ticket Selection (Right Side) -->
+    <div class="lg:w-1/2 bg-base-100 shadow-xl rounded-lg overflow-hidden">
+      <div
+        class="p-4 max-sm:p-3 bg-primary text-white font-semibold max-sm:text-lg"
+      >
+        <span>Tickets suchen</span>
+      </div>
+      <div class="p-6 max-sm:p-4">
+        <div class="space-y-4">
+          <!-- Ticket types with quantity controls -->
+          @for (ticket of availableTickets(); track ticket.type) { @if (
+          (ticket.type !== 'STUDENT' || isStudentTicketAllowed()) &&
+          (ticket.type !== 'GRADUATE' || isGraduateTicketAllowed()) ) {
+          <div
+            class="grid grid-cols-5 gap-4 items-center border-b pb-4 max-sm:grid-cols-3"
+            [attr.data-testid]="'ticket-row-digital-' + ticket.type"
+          >
+            <!-- Column 1: Ticket name and quantity controls -->
+            <div class="flex flex-col gap-2 col-span-2 max-sm:col-span-1">
+              <div class="flex items-center font-medium">
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-2">
+                    <div>
+                      {{
+                        ticket.type === "STUDENT"
+                          ? "Schülerermäßigung"
+                          : ticket.type === "EXTERNAL"
+                          ? "Standardeintritt"
+                          : ""
+                      }}
+                    </div>
+                    @if (ticket.type === 'STUDENT') {
+                    <div class="relative group">
+                      <svg
+                        class="w-4 h-4 text-gray-400 hover:text-primary cursor-help"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <div
+                        class="absolute left-0 bottom-full mb-2 hidden group-hover:block z-50 w-64 max-sm:w-56 max-sm:-left-20"
+                      >
+                        <div
+                          class="bg-gray-900 text-xs rounded-lg p-3 shadow-lg"
+                          style="color: #fff"
+                        >
+                          Die erste Karte für Schüler ist ermäßigt
+                          <div
+                            class="absolute left-4 max-sm:left-24 top-full w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-gray-900"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    }
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <p class="text-md italic text-gray-600">Digitale Karte</p>
+                    <div class="relative group">
+                      <svg
+                        class="w-4 h-4 text-gray-400 hover:text-primary cursor-help"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <div
+                        class="absolute left-0 bottom-full mb-2 hidden group-hover:block z-50 w-64 max-sm:w-56 max-sm:-left-20"
+                      >
+                        <div
+                          class="bg-gray-900 text-xs rounded-lg p-3 shadow-lg"
+                          style="color: #fff"
+                        >
+                          Die gültige digitale Karte wird Ihnen nach Ihrer
+                          Bezahlung per Mail in Form eines PDF-Dokuments
+                          zugesandt. Der Eintritt erfolgt durch Mitführen dieses
+                          Dokuments.
+                          <div
+                            class="absolute left-4 max-sm:left-24 top-full w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-gray-900"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Column 2: Quantity controls (both normal and physical) -->
+            <div class="flex flex-col gap-2 max-sm:col-span-1">
+              <app-number-select
+                class="w-full"
+                [inputValue]="selectedTicketsCountByType(ticket.type)()"
+                [min]="0"
+                [max]="maxTicketsByType(ticket.type)()"
+                (valueChange)="
+                  updateQuantity(
+                    ticket,
+                    $event > selectedTicketsCountByType(ticket.type)()
+                  )
+                "
+              />
+            </div>
+
+            <!-- Column 3: Price per ticket - Hidden on mobile -->
+            <div
+              class="text-xs text-gray-600 text-right max-sm:hidden flex items-center justify-end"
+            >
+              {{ formatPrice(ticket.price) }} / Stk.
+            </div>
+
+            <!-- Column 4: Total price -->
+            <div
+              class="text-lg max-sm:text-xl font-bold text-gray-600 text-right flex items-center justify-end max-sm:col-span-1"
+            >
+              @if (additionalChargeForPhysicalTicket() === undefined) {
+              Loading... } @else {
+              {{ formatPrice(getDigitalTicketTotalPrice(ticket)) }}
+              }
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-5 gap-4 items-center border-b pb-4 max-sm:grid-cols-3"
+            [attr.data-testid]="'ticket-row-physical-' + ticket.type"
+          >
+            <!-- Column 1: Ticket name and quantity controls -->
+            <div class="flex flex-col gap-2 col-span-2 max-sm:col-span-1">
+              <div class="flex items-center font-medium">
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-2">
+                    <div>
+                      {{
+                        ticket.type === "STUDENT"
+                          ? "Schülerermäßigung"
+                          : ticket.type === "EXTERNAL"
+                          ? "Standardeintritt"
+                          : ""
+                      }}
+                    </div>
+                    @if (ticket.type === 'STUDENT') {
+                    <div class="relative group">
+                      <svg
+                        class="w-4 h-4 text-gray-400 hover:text-primary cursor-help"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <div
+                        class="absolute left-0 bottom-full mb-2 hidden group-hover:block z-50 w-64 max-sm:w-56 max-sm:-left-20"
+                      >
+                        <div
+                          class="bg-gray-900 text-xs rounded-lg p-3 shadow-lg"
+                          style="color: #fff"
+                        >
+                          Die erste Karte für Schüler ist ermäßigt
+                          <div
+                            class="absolute left-4 max-sm:left-24 top-full w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-gray-900"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    }
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <p class="text-md italic text-gray-600">Physische Karte</p>
+                    <div class="relative group">
+                      <svg
+                        class="w-4 h-4 text-gray-400 hover:text-primary cursor-help"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <div
+                        class="absolute left-0 bottom-full mb-2 hidden group-hover:block z-50 w-64 max-sm:w-56 max-sm:-left-20"
+                      >
+                        <div
+                          class="bg-gray-900 text-xs rounded-lg p-3 shadow-lg"
+                          style="color: #fff"
+                        >
+                          Die traditionelle Methode - Nach Bezahlung müssen Sie
+                          sich Ihre Karten an der HTBLA Leonding abholen. Zur
+                          Abholung sollten Sie die E-Mail, die Sie nach
+                          Bezahlung erhalten haben, mit sich führen.
+                          <div
+                            class="absolute left-4 max-sm:left-24 top-full w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-gray-900"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Column 2: Quantity controls for physical tickets -->
+            <div class="flex flex-col gap-2 max-sm:col-span-1">
+              <app-number-select
+                class="w-full"
+                [inputValue]="physicalTicketsCountByType(ticket.type)()"
+                [min]="0"
+                [max]="maxPhysicalTicketsByType(ticket.type)()"
+                (valueChange)="
+                  updatePhysicalQuantity(
+                    ticket,
+                    $event > physicalTicketsCountByType(ticket.type)()
+                  )
+                "
+              />
+            </div>
+
+            <!-- Column 3: Price per ticket - Hidden on mobile -->
+            <div
+              class="text-xs text-gray-600 text-right max-sm:hidden flex items-center justify-end"
+            >
+              {{
+                formatPrice(
+                  ticket.price + (additionalChargeForPhysicalTicket() ?? 0)
+                )
+              }}
+              / Stk.
+            </div>
+
+            <!-- Column 4: Total price -->
+            <div
+              class="text-lg max-sm:text-xl font-bold text-gray-600 text-right flex items-center justify-end max-sm:col-span-1"
+            >
+              @if (additionalChargeForPhysicalTicket() === undefined) {
+              Loading... } @else {
+              {{ formatPrice(getPhysicalTicketTotalPrice(ticket)) }}
+              }
+            </div>
+          </div>
+          } } @for(tableGroup of getGroupedSeatsByTable(); track
+          tableGroup.tableName) {
+          <div class="grid grid-cols-5 gap-4 items-center border-b pb-4">
+            <!-- Column 1: Table name -->
+            <div
+              class="font-medium col-span-2 max-sm:text-base max-sm:col-span-1"
+            >
+              {{ tableGroup.tableName }} - {{ tableGroup.seats.length }}x
+            </div>
+
+            <!-- Mobile: Price in top right -->
+            <div
+              class="text-lg max-sm:text-xl font-bold text-gray-600 text-right sm:hidden max-sm:col-span-1"
+            >
+              {{ formatPrice(tableGroup.totalPrice) }}
+            </div>
+
+            <!-- Column 2: Remove button (full width on mobile) -->
+            <button
+              (click)="removeTableGroup(tableGroup)"
+              class="btn btn-sm max-sm:btn-md btn-outline btn-error max-sm:col-span-2 max-sm:w-full"
+            >
+              Entfernen
+            </button>
+
+            <!-- Column 3: Price calculation (without solution) - Hidden on mobile -->
+            <div class="text-xs text-gray-600 text-right max-sm:hidden">
+              {{ getPriceCalculationWithoutSolution(tableGroup.seats) }}
+            </div>
+
+            <!-- Column 4: Price solution - Hidden on mobile (shown in row 1) -->
+            <div
+              class="text-lg font-bold text-gray-600 text-right max-sm:hidden"
+            >
+              {{ formatPrice(tableGroup.totalPrice) }}
+            </div>
+          </div>
+          }
+        </div>
+
+        <!-- Total summary section -->
+        <div class="mt-4 p-4 max-sm:p-5 bg-base-200 rounded-lg">
+          <div
+            class="flex justify-between font-semibold text-xl max-sm:text-2xl"
+          >
+            <span>Gesamt:</span>
+            <span>{{ formatPrice(total()) }}</span>
+          </div>
+        </div>
+
+        <div class="text-sm max-sm:text-base text-gray-500 mt-4 max-sm:px-1">
+          <p class="max-sm:text-center max-sm:text-sm max-sm:p-0 max-sm:m-0">
+            Bezahlung erfolgt ausschließlich über eine Überweisung an die in der
+            Bestätigungsmail angegebenen IBAN oder per Barzahlung in der Schule.
+            Es fallen keine zusätzlichen Gebühren an.
+          </p>
+        </div>
+
+        <div class="mt-6 flex items-center justify-end max-sm:justify-center">
+          <div>
+            <span class="font-semibold max-sm:text-lg"
+              >Ticketlimit: {{ totalTicketsSelected() }}/{{
+                ticketLimit()
+              }}</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="bg-base-200 p-6 max-sm:p-4 flex justify-end max-sm:justify-center items-end"
+      >
+        <button
+          class="btn btn-success max-sm:btn-lg flex items-center gap-2 max-sm:w-full max-sm:text-base"
+          (click)="continueToPersonalInfo()"
+          data-testid="continue-to-personal-data"
+        >
+          <span class="hidden md:inline">Weiter zur Bestellung</span>
+          <span class="md:hidden">Weiter</span>
+          <svg
+            class="w-5 h-5 max-sm:w-6 max-sm:h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Modal -->
+  <div
+    *ngIf="showLoginModal()"
+    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+  >
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+      <h3 class="font-bold text-lg">Anmeldung erforderlich</h3>
+      <p class="py-4">
+        Sie müssen angemeldet sein, um mit der Bestellung fortzufahren.
+      </p>
+      <div class="flex justify-end gap-2 mt-4">
+        <button
+          class="btn bg-red-500 hover:bg-red-600 text-white"
+          (click)="closeLoginModal()"
+        >
+          Abbrechen
+        </button>
+        <button class="btn btn-primary" (click)="login()">Anmelden</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Table Selector Modal -->
+@if (showTableSelectorModal()) {
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+  (click)="closeTableSelectorModal()"
+>
+  <div
+    class="shadow-xl max-w-7xl max-h-[95vh] w-full mx-4 flex flex-col rounded-lg bg-background modal-content"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Modal Header -->
+    <div
+      class="flex justify-between items-center p-4 bg-primary text-primary-content font-semibold rounded-t-lg"
+    >
+      <h3 class="text-lg font-semibold">Saalplan - Vergrößerte Ansicht</h3>
+      <button
+        (click)="closeTableSelectorModal()"
+        class="btn btn-sm btn-circle btn-ghost text-primary-content hover:bg-primary-content hover:bg-opacity-20"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-5 h-5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="flex-1 p-4 bg-background/50 overflow-hidden">
+      <div class="h-full w-full">
+        <app-table-selector
+          #modalTableSelector
+          [selectedSeats]="selectedSeats()"
+          [isModal]="true"
+          [selectedLayerFromParent]="selectedLayerName()"
+          [canvasWidth]="1000"
+          [canvasHeight]="700"
+          (selectedSeatsChange)="
+            selectedSeats.set($event); updateSeatSelection()
+          "
+          (connectionStatusChange)="onConnectionStatusChange($event)"
+        >
+        </app-table-selector>
+      </div>
+    </div>
+
+    <!-- Modal Footer with Legend -->
+    <div class="p-4 border-t rounded-b-lg">
+      <div class="seat-legend">
+        <div class="legend-item">
+          <div
+            class="legend-dot"
+            [style.background-color]="colors.SEAT_SELECTABLE"
+          ></div>
+          <span>Verfügbar</span>
+        </div>
+        <div class="legend-item">
+          <div
+            class="legend-dot"
+            [style.background-color]="colors.SEAT_TAKEN"
+          ></div>
+          <span>bereits besetzt</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot unselectable-split"></div>
+          <span>Nicht auswählbar</span>
+        </div>
+        <div class="legend-item">
+          <div
+            class="legend-dot"
+            [style.background-color]="colors.SEAT_SELECTED"
+          ></div>
+          <span>Ausgewählt</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

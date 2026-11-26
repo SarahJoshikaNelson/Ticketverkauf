@@ -1,0 +1,10 @@
+<div class="flex flex-col justify-evenly items-center h-full bg-white opacity-75 w-full p-5">
+    <div class="flex flex-col gap-2">
+        <h1 class="text-3xl text-indigo-600 text-center font-bold max-sm:text-xl">{{ data.info }}</h1>
+        <h2 class="text-xl text-indigo-600 text-center max-sm:text-sm">{{ data.desc }}</h2>
+    </div>
+    <div class="flex flex-row justify-evenly items-center w-1/2">
+        <button class="p-2 transition-all duration-150 ease-in-out rounded-xl shadow-md shadow-green-300 hover:bg-green-100 hover:scale-105" (click)="data.action(); this.dialogRef.close()">Ja</button>
+        <button class="p-2 transition-all duration-150 ease-in-out rounded-xl shadow-md shadow-red-300 hover:bg-red-100 hover:scale-105" (click)="this.dialogRef.close()">Nein</button>
+    </div> 
+</div>

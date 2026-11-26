@@ -1,0 +1,32 @@
+<div class="text-white py-6 max-sm:py-4 max-sm:overflow-x-auto max-sm:flex top-0 max-sm:justify-start" [class.mt-8]="!isWaitingList() && duration() > 0 && !isConfirmationRedirect() && !isConfirmation()">
+  <div class="container mx-auto px-4 max-sm:px-2 max-sm:min-w-max">
+    <div class="flex justify-between items-center max-sm:gap-1">
+      @for (step of [1, 2, 3, 4, 5]; track step) {
+        <!-- Step circles -->
+        @if (step > 1) {
+          <!-- Progress bar before step -->
+          <div class="h-1 max-sm:h-1.5 flex-1 max-sm:flex-none max-sm:w-8 bg-gray-600 relative">
+            <div class="absolute inset-0 bg-primary transition-all duration-300" [style.width]="progressWidths()[step-1]"></div>
+          </div>
+        }
+        
+        <div #stepElement class="flex-1 max-sm:flex-none text-center flex flex-col items-center max-sm:min-w-[60px]">
+          <div class="rounded-full w-8 h-8 max-sm:w-10 max-sm:h-10 flex items-center justify-center mb-2 max-sm:mb-1 text-sm max-sm:text-base font-medium transition-all duration-300" 
+              [class.bg-primary]="completedSteps()[step] || currentSteps()[step]"
+              [class.bg-gray-600]="!(completedSteps()[step] || currentSteps()[step])">
+            {{step}}
+          </div>
+          <div class="text-sm max-sm:text-xs max-sm:leading-tight">
+            @switch (step) {
+              @case (1) { <span class="max-sm:hidden">Warteschlange</span><span class="sm:hidden">Warte</span> }
+              @case (2) { Auswahl }
+              @case (3) { Daten }
+              @case (4) { Übersicht }
+              @case (5) { <span class="max-sm:hidden">Bestätigung</span><span class="sm:hidden">Bestät.</span> }
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,83 @@
+@import url("https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800"); /* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: "Poppins", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  --primary-color: #ffffff;
+  --secondary-color: #ffffff;
+  --text-color: #000001;
+  --background-color: #ffffff;
+  --border-radius: 4px;
+  --accent-color: #000000;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-size: 1rem;
+  line-height: 1.6;
+  overflow: auto; 
+}
+
+/* Custom scrollbar styles for Firefox */
+body * {
+  scrollbar-color: var(--accent-color) var(--background-color); /* Firefox */
+}
+
+/* Custom scrollbar styles for WebKit browsers (Chrome, Safari) */
+body::-webkit-scrollbar,
+body *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+body::-webkit-scrollbar-track,
+body *::-webkit-scrollbar-track {
+  background: var(--background-color);
+}
+
+body::-webkit-scrollbar-thumb,
+body *::-webkit-scrollbar-thumb {
+  background-color: var(--accent-color);
+  border-radius: 10px;
+  border: 2px solid var(--background-color);
+}
+
+/* Remove arrows at the ends of the scrollbar in WebKit browsers */
+body::-webkit-scrollbar-button,
+body *::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* Apply theme colors to Material components */
+.mat-mdc-button.mat-primary {
+  --mdc-filled-button-container-color: var(--primary-color);
+  --mdc-filled-button-label-text-color: var(--text-color);
+}
+
+.mat-mdc-button.mat-secondary {
+  --mdc-filled-button-container-color: var(--secondary-color);
+  --mdc-filled-button-label-text-color: var(--text-color);
+}
+
+.mat-mdc-card {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border-radius: var(--border-radius);
+}
+
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-color: var(--background-color);
+  --mdc-dialog-supporting-text-color: var(--text-color);
+}

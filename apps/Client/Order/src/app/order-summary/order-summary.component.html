@@ -1,0 +1,230 @@
+<div class="container mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-4">Bestellübersicht</h1>
+  <p class="mb-4">
+    Bitte überprüfen Sie Ihre Bestellung und bestätigen Sie den Kauf.
+  </p>
+
+  <div class="card shadow-xl mb-4 bg-background">
+    <div class="p-6">
+      <h2 class="text-xl font-bold mb-4">Bestellübersicht</h2>
+      @if(mappedTickets().length === 0 && seats().length === 0) {
+      <p class="text-gray-500">Keine Tickets oder Tische ausgewählt.</p>
+      } @else {
+      <!-- Tickets Section -->
+      @if(mappedTickets().length > 0) {
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-3 text-primary">Tickets</h3>
+        <div class="space-y-4">
+          @for (ticket of mappedTickets(); track ticket.type) {
+            <!-- Digital Tickets Row -->
+            @if (getDigitalQuantity(ticket) > 0) {
+            <div class="grid grid-cols-4 gap-4 items-center border-b pb-4 max-sm:grid-cols-3">
+              <!-- Column 1: Ticket name -->
+              <div class="flex flex-col gap-1 max-sm:col-span-1">
+                <div class="font-medium">
+                  {{ getTicketTypeName(ticket.type) }}
+                </div>
+                <p class="text-sm italic text-gray-600">Digitale Karte</p>
+              </div>
+
+              <!-- Column 2: Quantity -->
+              <div class="flex items-center justify-center max-sm:col-span-1">
+                <span class="text-lg font-semibold">{{ getDigitalQuantity(ticket) }}×</span>
+              </div>
+
+              <!-- Column 3: Price per ticket - Hidden on mobile -->
+              <div class="text-xs text-gray-600 text-right max-sm:hidden flex items-center justify-end">
+                {{ formatPrice(ticket.price) }} / Stk.
+              </div>
+
+              <!-- Column 4: Total price -->
+              <div class="text-lg font-bold text-gray-600 text-right flex items-center justify-end max-sm:col-span-1">
+                {{ formatPrice(ticket.price * getDigitalQuantity(ticket)) }}
+              </div>
+            </div>
+            }
+
+            <!-- Physical Tickets Row -->
+            @if (ticket.physicalQuantity > 0) {
+            <div class="grid grid-cols-4 gap-4 items-center border-b pb-4 max-sm:grid-cols-3">
+              <!-- Column 1: Ticket name -->
+              <div class="flex flex-col gap-1 max-sm:col-span-1">
+                <div class="font-medium">
+                  {{ getTicketTypeName(ticket.type) }}
+                </div>
+                <p class="text-sm italic text-gray-600">Physische Karte</p>
+              </div>
+
+              <!-- Column 2: Quantity -->
+              <div class="flex items-center justify-center max-sm:col-span-1">
+                <span class="text-lg font-semibold">{{ ticket.physicalQuantity }}×</span>
+              </div>
+
+              <!-- Column 3: Price per ticket - Hidden on mobile -->
+              <div class="text-xs text-gray-600 text-right max-sm:hidden flex items-center justify-end">
+                {{ formatPrice(ticket.price + additionalChargeForPhysicalTicket()) }} / Stk.
+              </div>
+
+              <!-- Column 4: Total price -->
+              <div class="text-lg font-bold text-gray-600 text-right flex items-center justify-end max-sm:col-span-1">
+                {{ formatPrice((ticket.price + additionalChargeForPhysicalTicket()) * ticket.physicalQuantity) }}
+              </div>
+            </div>
+            }
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Seats Section -->
+      @if(seats().length > 0) {
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-3 text-primary">Tische & Plätze</h3>
+        <div class="space-y-4">
+          @for(tableGroup of getGroupedSeatsByTable(); track tableGroup.tableName) {
+          <div class="grid grid-cols-4 gap-4 items-center border-b pb-4 max-sm:grid-cols-3">
+            <!-- Column 1: Table name -->
+            <div class="font-medium max-sm:col-span-1">
+              Tisch {{ tableGroup.tableName }} - {{ tableGroup.seats.length }} Plätze
+            </div>
+
+            <!-- Column 2: Quantity display -->
+            <div class="flex items-center justify-center max-sm:col-span-1">
+              <span class="text-lg font-semibold">{{ tableGroup.seats.length }}×</span>
+            </div>
+
+            <!-- Column 3: Price calculation (without solution) - Hidden on mobile -->
+            <div class="text-xs text-gray-600 text-right max-sm:hidden flex items-center justify-end">
+              {{ getPriceCalculationWithoutSolution(tableGroup.seats) }}
+            </div>
+
+            <!-- Column 4: Price solution -->
+            <div class="text-lg font-bold text-gray-600 text-right flex items-center justify-end max-sm:col-span-1">
+              {{ formatPrice(tableGroup.totalPrice) }}
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Total Summary -->
+      <div class="mt-6 p-4 bg-base-200 rounded-lg">
+        <div class="flex justify-between font-semibold text-xl">
+          <span>Gesamt:</span>
+          <span>{{ formatPrice(getTotalPrice()) }}</span>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-xl mb-4">
+    <div class="p-6">
+      <h2 class="text-xl font-bold mb-4">Persönliche Informationen</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <p>
+            <span class="font-bold">Name:</span>
+            {{ order().customer.firstName }} {{ order().customer.lastName }}
+          </p>
+          <p>
+            <span class="font-bold">Email:</span>
+            {{ order().customer.mailAddress }}
+          </p>
+          <p>
+            <span class="font-bold">Telefon:</span>
+            {{ order().customer.phoneNumber }}
+          </p>
+        </div>
+        <div>
+          <p>
+            <span class="font-bold">Straße:</span>
+            {{ order().customer.street }} {{ order().customer.streetNumber }}
+          </p>
+          <p>
+            <span class="font-bold">PLZ:</span> {{ order().customer.zipCode }}
+          </p>
+          <p><span class="font-bold">Ort:</span> {{ order().customer.town }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-xl mb-4">
+    <div class="p-6">
+      <h2 class="text-xl font-bold mb-4">Zahlungsinformationen</h2>
+      @if (stripeEnabled()) {
+      <p>Nach Bestätigung werden Sie zu Stripe weitergeleitet, um die Zahlung online abzuschließen.</p>
+      } @else {
+      <p>Weitere Informationen zur Zahlung finden Sie in der Bestätigungsmail. Sie werden die beiden Optionen bekommen, Bar an der HTBLA Leonding oder online per Überweisung zu bezahlen.</p>
+      }
+    </div>
+  </div>
+
+  <div class="form-control mb-4 m-4">
+    <label class="label cursor-pointer justify-start">
+      <input
+        type="checkbox"
+        class="mr-2 h-4 w-4 rounded text-primary focus:ring-primary"
+        [checked]="termsAccepted()"
+        (change)="updateTermsAccepted($any($event.target).checked)"
+        data-testid="summary-terms-checkbox"
+      />
+      <span class="label-text"
+        >Ich akzeptiere die Allgemeinen Geschäftsbedingungen und
+        <a [href]="datenschutzUrl()" class="text-primary underline">Datenschutzrichtlinien</a></span
+      >
+    </label>
+  </div>
+
+  @if (checkoutError()) {
+  <div class="m-4 p-4 bg-red-50 border border-red-300 rounded-lg flex items-start gap-3">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+    </svg>
+    <div>
+      <p class="font-semibold text-red-700">Bestellung fehlgeschlagen</p>
+      <p class="text-sm text-red-600 mt-1">{{ checkoutError() }}</p>
+    </div>
+  </div>
+  }
+
+  <div class="flex justify-between m-4">
+    <button
+      class="btn border border-primary bg-transparent text-primary hover:bg-primary hover:bg-opacity-10"
+      (click)="goBack()"
+    >
+      Zurück
+    </button>
+    <button
+      class="btn btn-primary"
+      [disabled]="!termsAccepted() || isSubmitting() || !!checkoutError()"
+      (click)="submitOrder()"
+      data-testid="summary-submit-order"
+    >
+      @if (isSubmitting()) {
+      <svg
+        class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+      } {{ stripeEnabled() ? 'Weiter zur Zahlung' : 'Bestellung absenden' }}
+    </button>
+  </div>
+</div>

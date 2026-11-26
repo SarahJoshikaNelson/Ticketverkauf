@@ -1,0 +1,10 @@
+{
+    "name": "@ticket-system/models",
+   
+    "types": "./index.ts",
+    "main": "./index.ts",
+
+    "dependencies": {
+        "typescript": "latest"
+    }
+}

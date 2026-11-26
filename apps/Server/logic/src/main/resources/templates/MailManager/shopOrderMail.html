@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Ihre Bestellung im Ball-Shop</title>
+</head>
+<body style="font-family: Arial, sans-serif; font-size: 14px; color: #333; margin: 0; padding: 0;">
+
+<div style="max-width: 600px; margin: 0 auto; padding: 32px 16px;">
+
+    <h2 style="color: #333; margin-bottom: 4px;">Hallo, {dto.recipientName}!</h2>
+
+    {#if dto.isUpgrade}
+    <p>Vielen Dank für Ihr Ticket-Upgrade. Wir haben Ihre Anfrage erhalten und Ihr digitales Ticket wird nun als
+        physische Karte produziert.</p>
+    {#else}
+    <p>Vielen Dank für Ihre Bestellung im Ball-Shop. Wir haben Ihre Bestellung erhalten und bestätigen hiermit den
+        Eingang.</p>
+    {/if}
+
+    <h3 style="border-bottom: 2px solid #eee; padding-bottom: 8px;">
+        {#if dto.isUpgrade}Upgrade-Details{#else}Bestellübersicht{/if}
+    </h3>
+
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+        <thead>
+            <tr style="background-color: #f5f5f5;">
+                <th style="text-align: left; padding: 10px 8px; border-bottom: 2px solid #ddd;">Artikel</th>
+                <th style="text-align: center; padding: 10px 8px; border-bottom: 2px solid #ddd;">Menge</th>
+                <th style="text-align: right; padding: 10px 8px; border-bottom: 2px solid #ddd;">Einzelpreis</th>
+                <th style="text-align: right; padding: 10px 8px; border-bottom: 2px solid #ddd;">Gesamt</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#each dto.lines line}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 10px 8px;">{line.title}</td>
+                <td style="text-align: center; padding: 10px 8px;">{line.quantity}</td>
+                <td style="text-align: right; padding: 10px 8px;">{line.unitPrice.formatMoney()}</td>
+                <td style="text-align: right; padding: 10px 8px;">{line.totalPrice().formatMoney()}</td>
+            </tr>
+            {/each}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3"
+                    style="text-align: right; padding: 12px 8px; font-weight: bold; border-top: 2px solid #ddd;">
+                    Gesamtbetrag:</td>
+                <td style="text-align: right; padding: 12px 8px; font-weight: bold; border-top: 2px solid #ddd; color: #444;">
+                    {dto.total.formatMoney()}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <p style="color: #666; font-size: 13px;">
+        Bei Fragen stehen wir Ihnen gerne zur Verfügung.<br>
+        <em>Diese E-Mail wurde automatisch generiert.</em>
+    </p>
+
+</div>
+</body>
+</html>
