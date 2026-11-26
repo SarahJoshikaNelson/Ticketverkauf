@@ -8,7 +8,7 @@ allprojects {
 }
 
 wrapper {
-    gradleVersion = '8.8'
+    gradleVersion = '9.8.2'
 }
 
 subprojects {
@@ -24,11 +24,11 @@ subprojects {
         implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
         implementation group: 'com.stripe', name: 'stripe-java', version: '26.5.1'
 
-        compileOnly 'org.projectlombok:lombok:1.18.34'
-        annotationProcessor 'org.projectlombok:lombok:1.18.34'
+        compileOnly 'org.projectlombok:lombok:1.18.48'
+        annotationProcessor 'org.projectlombok:lombok:1.18.48'
 
-        testCompileOnly 'org.projectlombok:lombok:1.18.34'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+        testCompileOnly 'org.projectlombok:lombok:1.18.48'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.48'
         testImplementation 'org.mockito:mockito-core:5.8.0'
         testImplementation 'org.mockito:mockito-junit-jupiter:5.8.0'
 
@@ -53,8 +53,8 @@ subprojects {
     }
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_27
+        targetCompatibility = JavaVersion.VERSION_27
     }
 
     test {

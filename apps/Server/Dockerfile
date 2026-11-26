@@ -1,4 +1,4 @@
-FROM gradle:8.9-jdk21 AS build
+FROM gradle:9.8.2-jdk27 AS build
 WORKDIR /project
 
 # Copy gradle files first for better layer caching
@@ -22,7 +22,7 @@ COPY service/src service/src
 RUN gradle build -x test --profile --no-daemon
 
 # Runtime image
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:27-jre
 WORKDIR /deployment
 
 # Copy the built artifacts

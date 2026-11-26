@@ -10,8 +10,8 @@ A full documentation can be found in all the markdown files in [here](./docs).
 - [tree taiga](https://tree.taiga.io/project/eros-klein-kartenverkauf/backlog)
 
 ## Necessary Packages
-- [Node.js (we use v11.2.0)](https://nodejs.org/)
-- [JDK21](https://www.oracle.com/java/technologies/javase-jdk21-downloads.html)
+- [Node.js 26.13.1](https://nodejs.org/) (see .nvmrc)
+- JDK 27 (Gradle 9.8.2 wrapper is included)
 
 ## Used Technologies
 - [Angular](https://angular.io/)
