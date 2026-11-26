@@ -1,0 +1,40 @@
+POST http://localhost:8080/api/v2/admin/Order
+Content-Type: application/json
+secret-pass: quavious
+
+{
+  "order": {
+    "status": "WAITING",
+    "orderDate": "2024-03-21T10:00:00",
+    "seatCount": 2,
+    "tickets": [
+      {
+        "price": 15.00,
+        "ticketType": "STUDENT"
+      }
+    ],
+    "table": {
+      "name": "Table-1",
+      "price": 100.00,
+      "size": 4,
+      "seatsAlreadyTaken": 2
+    }
+  },
+  "customer": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "mailAddress": "john.doe@example.com",
+    "phoneNumber": "+1234567890",
+    "schoolClass": "5AHIF",
+    "male": true,
+    "street": "Main Street",
+    "streetNumber": "123",
+    "zipCode": "12345",
+    "town": "Anytown"
+  }
+}
+
+
+### Add new order
+GET http://localhost:8080/api/v2/admin/test
+Content-Type: application/json

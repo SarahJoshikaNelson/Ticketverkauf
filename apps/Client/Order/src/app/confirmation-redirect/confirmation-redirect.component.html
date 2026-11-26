@@ -1,0 +1,29 @@
+<div class="container">
+  @if (isLoading()) {
+  <h1>Ihre Bestellung wird bestätigt</h1>
+  <div class="loader"></div>
+  <p>Bitte warten Sie, während wir Ihre Bestellung verarbeiten...</p>
+  } @else if (alreadyConfirmed()) {
+  <h1 class="already-confirmed">Bestellung bereits bestätigt</h1>
+  <p>Diese Bestellung wurde bereits bestätigt.</p>
+  <button class="btn btn-primary" (click)="goToHome()">Zur Startseite</button>
+  } @else if (!error()) {
+  <h1 class="success">Ihre Bestellung wurde bestätigt</h1>
+  <p>Sie bekommen nun eine Bestellbestätigung per E-Mail.</p>
+  <p>In dieser finden Sie Ihre Bestellnummer sowie Ihre Bestellübersicht. Sobald Sie bezahlt haben, bekommen
+    Sie eine weitere Mail mit Ihren online Tickets beziehungsweise Anweisungen zum Abholen der herkömmlichen Tickets.
+  </p>
+  <button class="btn btn-primary" (click)="goToHome()">Zur Startseite</button>
+  } @else {
+  <div class="error-container">
+    <svg xmlns="http://www.w3.org/2000/svg" class="error-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    </svg>
+    <h1>Fehler bei der Bestätigung</h1>
+    <p>Ihre Bestellung konnte nicht bestätigt werden. Bitte versuchen Sie es später erneut oder kontaktieren Sie den
+      Support.</p>
+    <button class="btn btn-primary" (click)="goToHome()">Zur Startseite</button>
+  </div>
+  }
+</div>

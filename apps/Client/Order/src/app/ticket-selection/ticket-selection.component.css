@@ -1,0 +1,217 @@
+.seating-map-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 500px;
+  background-color: #b8b8b858;
+  border-radius: 4px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.seating-map {
+  position: absolute;
+  transform-origin: center;
+  transition: transform 0.1s ease-out;
+  cursor: grab;
+  height: 100%;
+  width: 100%;
+}
+
+.seating-map:active {
+  cursor: grabbing;
+}
+
+.stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150px;
+  height: 80px;
+  background-color: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #666;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: bold;
+  z-index: 2;
+}
+
+.seat {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.seat:hover {
+  transform: scale(1.3);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .seat {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.seat.standard {
+  background-color: #3366cc;
+}
+
+.seat.resale {
+  background-color: #cc33cc;
+}
+
+.seat.unavailable {
+  background-color: #999999;
+  cursor: not-allowed;
+}
+
+.seat.selected {
+  background-color: #ff6600;
+  transform: scale(1.2);
+  box-shadow: 0 0 5px rgba(255, 102, 0, 0.7);
+}
+
+.zoom-controls {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 5;
+}
+
+@media (max-width: 768px) {
+  .zoom-controls {
+    right: 15px;
+    top: 15px;
+  }
+
+  .zoom-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+}
+
+.zoom-btn {
+  width: 35px;
+  height: 35px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.zoom-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.seat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+/* Legend dot colors are now handled via inline styles using shared constants */
+
+/* Modal table selector styles */
+.modal-content app-table-selector {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.modal-content app-table-selector > div {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.modal-content canvas#tablesCanvas {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  border-radius: 8px;
+  display: block;
+}
+
+/* Special split-color dot for unselectable items */
+.legend-dot.unselectable-split {
+  background: linear-gradient(90deg,
+    var(--seat-unselectable-color) 50%,
+    var(--seat-selectable-table-color) 50%
+  );
+}
+
+.section-label {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 3;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .seating-map-container {
+    height: 400px;
+    touch-action: none;
+  }
+
+  .seating-map-mobile-view {
+    transform: scale(1.2);
+  }
+
+  .section-label {
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .seat-legend {
+    justify-content: center;
+  }
+
+  .legend-item {
+    margin-right: 10px;
+  }
+}
+

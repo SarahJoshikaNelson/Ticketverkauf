@@ -1,0 +1,13 @@
+<nav class="shadow-2xl top-0 left-0 right-0 h-10 flex bg-secondary py-6 z-20 items-center justify-around sticky">
+  <a class="max-sm:hidden" [href]="homepage">HTBLA Leonding</a>
+  @if (loader()) {
+    <div class="w-10 h-10 border-t-transparent border-b-transparent border-r-transparent border-l-transparent border-2 border-primary rounded-full animate-spin"></div>
+  } @else {
+    <a routerLink="/" class="text-xl tracking-wide text-center font-medium">Maturaball {{ date() | date:'dd.MM.yyyy' }}</a>
+  }
+  <div class="flex gap-4 max-sm:hidden">
+    <app-button name="Shop" [size]="{width: 'auto', height: '2rem'}" [color]="color" (action)="navigateToShopPage()" />
+    <app-button name="Karten Kaufen" [size]="{width: 'auto', height: '2rem'}" [color]="color"
+      (action)="navigateToOrderPage()" />
+  </div>
+</nav>

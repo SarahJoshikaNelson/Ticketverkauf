@@ -1,0 +1,90 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-height: 50vh;
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  justify-self: center;
+  align-self: center;
+  gap: 20px;
+}
+
+h1 {
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+h1.success {
+  color: #22c55e;
+}
+
+
+h1.already-confirmed {
+  color: #d3891a;
+}
+
+.loader {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+p {
+  margin-top: 20px;
+  color: #666;
+  font-size: 16px;
+  max-width: 600px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error state styles */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 500px;
+}
+
+.error-icon {
+  width: 60px;
+  height: 60px;
+  color: #ef4444;
+  margin-bottom: 20px;
+}
+
+.error-container h1 {
+  color: #ef4444;
+}
+
+.error-container p {
+  margin-bottom: 30px;
+}
+
+.error-container button {
+  background-color: #3b82f6;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.error-container button:hover {
+  background-color: #2563eb;
+}

@@ -1,0 +1,34 @@
+<main class="min-h-screen bg-background">
+  @if (showTimer()) {
+  <div
+    class="w-full flex items-center justify-center top-0 left-0 z-50 h-16 animate-pulse sticky transition-colors duration-500"
+    [class]="timerBarClass()"
+    [style.animation-duration.s]="pulseDuration()"
+  >
+    <div class="flex items-center gap-3">
+      <svg
+        class="w-5 h-5 text-text"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </svg>
+      <p class="text-text font-semibold text-xl">
+        {{ timeDifference() }} Minuten verbleibend!
+      </p>
+    </div>
+  </div>
+  } @if (!isDownloadPage() && !isCheckoutSuccess()) {
+  <app-navbar
+    [currentStep]="currentStep()"
+    [isWaitingListInput]="isWaitingList()"
+  ></app-navbar>
+  }
+
+  <div class="container mx-auto p-4">
+    <router-outlet></router-outlet>
+  </div>
+</main>

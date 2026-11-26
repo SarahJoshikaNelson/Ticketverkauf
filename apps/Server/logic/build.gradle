@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+    id 'org.kordamp.gradle.jandex' version '2.3.0'
+}
+
+tasks.named('compileTestJava') {
+    // Declare an explicit dependency on the jandex task
+    dependsOn tasks.named('jandex')
+}
+
+tasks.named('quarkusDependenciesBuild') {
+    dependsOn tasks.named('jandex')
+    // Alternatively, you can also use:
+    // mustRunAfter tasks.named('jandex')
+}
+
+dependencies {
+    implementation 'io.quarkus:quarkus-elytron-security-jdbc'
+    implementation 'io.quarkus:quarkus-smallrye-jwt'
+    implementation 'io.quarkus:quarkus-smallrye-jwt-build'
+    implementation(project(':api'))
+    implementation(project(':interface'))
+
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-hibernate-orm-panache'
+
+    implementation 'io.quarkus:quarkus-mailer'
+    implementation 'com.itextpdf:itext7-core:7.2.6@pom'
+    implementation 'com.itextpdf:html2pdf:4.0.3'
+    implementation 'io.quarkus:quarkus-scheduler'
+    
+    // ZXing for QR code generation
+    implementation 'com.google.zxing:core:3.5.2'
+    implementation 'com.google.zxing:javase:3.5.2'
+
+    // PDFBox for PDF text extraction
+    implementation 'org.apache.pdfbox:pdfbox:2.0.31'
+
+    // Jackson for JSON processing
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    implementation 'io.quarkus:quarkus-jdbc-postgresql'
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'jakarta.transaction:jakarta.transaction-api:2.0.1'
+}

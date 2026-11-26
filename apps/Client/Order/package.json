@@ -1,0 +1,57 @@
+{
+  "name": "@ticket-system/client-order",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "dev": "ng serve --port 4201",
+    "build": "ng build",
+    "build:dev": "ng build --configuration=dev",
+    "watch": "ng build --watch --configuration development",
+    "docker": "cd ../../../ && docker build -f apps/Client/Order/Dockerfile -t erosklein/ticket-system-client-order:latest --build-arg BUILD_CONFIG=production . && docker push erosklein/ticket-system-client-order:latest",
+    "dockerDev": "cd ../../../ && docker buildx build --platform linux/amd64 --push --progress=plain -f apps/Client/Order/Dockerfile -t erosklein/ticket-system-client-order:dev --build-arg BUILD_CONFIG=dev .",
+    "e2e": "playwright test",
+    "e2e:headed": "playwright test --headed",
+    "e2e:debug": "playwright test --debug"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/common": "^19.2.0",
+    "@angular/compiler": "^19.2.0",
+    "@angular/core": "^19.2.0",
+    "@angular/forms": "^19.2.0",
+    "@angular/platform-browser": "^19.2.0",
+    "@angular/platform-browser-dynamic": "^19.2.0",
+    "@angular/router": "^19.2.0",
+    "@tailwindcss/postcss": "^4.0.16",
+    "keycloak-angular": "^19.0.2",
+    "keycloak-js": "^26.0.6",
+    "postcss": "^8.5.3",
+    "rxjs": "~7.8.0",
+    "tailwindcss": "^4.1.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0",
+    "typescript": "~5.7.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.2",
+    "@angular-devkit/build-angular": "^19.2.1",
+    "@angular/cli": "^19.2.1",
+    "@angular/compiler-cli": "^19.2.0",
+    "@types/jasmine": "~5.1.0",
+    "jasmine-core": "~5.6.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "5.7.2"
+  },
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Firefox versions",
+    "last 2 Edge versions",
+    "last 2 Safari versions",
+    "last 2 iOS versions"
+  ]
+}

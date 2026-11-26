@@ -1,0 +1,14 @@
+<div class="flex flex-col justify-evenly items-center h-full bg-background opacity-75 w-full p-5">
+  @if(data.picture){
+    <div>
+        <img src="redX.svg" alt="info">
+    </div>
+  }
+    <div class="flex flex-col gap-2">
+        <h1 class="text-3xl text-text text-center font-bold max-sm:text-xl">{{ data.info }}</h1>
+        <h2 class="text-xl text-text text-center max-sm:text-sm">{{ data.desc }}</h2>
+    </div>
+    @if (!isLoggedIn() && data.button) {
+        <app-button name="Als Maturant anmelden" [color]="'violet'" (action)="logIn()"></app-button>
+    }
+</div>

@@ -1,0 +1,31 @@
+.bg-purple-600 {
+  background-color: var(--primary-color, #3b82f6); /* Use CSS variable with blue fallback */
+}
+
+.bg-gray-600 {
+  background-color: #4a5568; /* Slightly lighter gray to match image */
+}
+
+:host ::ng-deep .bg-dark-navy {
+  background-color: #1E2B3C; /* Dark navy background */
+}
+
+/* Make the progress bars align properly */
+.h-1 {
+  align-self: center;
+  margin-top: -10px; /* Adjust to vertically align with the circles */
+}
+
+/* Make the numbers slightly more visible */
+.rounded-full {
+  font-weight: bold;
+}
+
+/* Ensure circles are perfectly round */
+.w-8 {
+  width: 2rem;
+}
+
+.h-8 {
+  height: 2rem;
+}

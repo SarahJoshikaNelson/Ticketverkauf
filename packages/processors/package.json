@@ -1,0 +1,10 @@
+{
+    "name": "@ticket-system/processors",
+   
+    "types": "./index.ts",
+    "main": "./index.ts",
+
+    "dependencies": {
+        "typescript": "latest"
+    }
+}

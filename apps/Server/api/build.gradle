@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+    id 'org.kordamp.gradle.jandex' version '2.3.0'
+}
+
+tasks.named('compileTestJava') {
+    // Declare an explicit dependency on the jandex task
+    dependsOn tasks.named('jandex')
+}
+
+tasks.named('quarkusDependenciesBuild') {
+    // Ensure quarkusDependenciesBuild runs after jandex
+    dependsOn tasks.named('jandex')
+}
+dependencies {
+    implementation 'io.quarkus:quarkus-elytron-security-jdbc'
+    implementation 'io.quarkus:quarkus-smallrye-jwt'
+    implementation 'io.quarkus:quarkus-smallrye-jwt-build'
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-hibernate-orm-panache'
+    implementation 'io.quarkus:quarkus-jdbc-postgresql'
+    implementation 'io.quarkus:quarkus-arc'
+    testImplementation 'io.quarkus:quarkus-junit5'
+
+    implementation(project(':interface'))
+}

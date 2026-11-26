@@ -1,0 +1,183 @@
+<div class="max-w-4xl mx-auto">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-primary">Bestellbestätigung</h1>
+    <p class="mt-2 text-gray-600">Ihre Tickets wurden erfolgreich gebucht!</p>
+  </div>
+
+  <div class="bg-base-100 shadow-xl rounded-lg overflow-hidden">
+    <div class="p-6">
+      <div class="text-center mb-8">
+        <div class="flex justify-center mb-4">
+          <div class="bg-success text-white rounded-full p-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        </div>
+        <h2 class="text-2xl font-bold">Vielen Dank für Ihre Bestellung!</h2>
+        <p class="mt-2 text-gray-600">
+          Sie müssen diese nun nur noch innerhalb von 24 Stunden in einer Ihnen
+          zugesandten E-Mail bestätigen.
+        </p>
+      </div>
+
+      <!-- Order Details -->
+      <div class="divider"></div>
+
+      <h3 class="text-xl font-semibold mb-4 text-primary">Bestelldetails</h3>
+
+      <!-- Tickets Section -->
+      @if(mappedTickets().length > 0) {
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-3 text-primary">Tickets</h3>
+        <div class="space-y-4">
+          @for (ticket of mappedTickets(); track ticket.type) {
+          <!-- Digital Tickets Row -->
+          @if (getDigitalQuantity(ticket) > 0) {
+          <div class="grid grid-cols-4 gap-4 items-center border-b pb-4 max-sm:grid-cols-3">
+            <!-- Column 1: Ticket name -->
+            <div class="flex flex-col gap-1 max-sm:col-span-1">
+              <div class="font-medium">
+                {{ getTicketTypeName(ticket.type) }}
+              </div>
+              <p class="text-sm italic text-gray-600">Digitale Karte</p>
+            </div>
+
+            <!-- Column 2: Quantity -->
+            <div class="flex items-center justify-center max-sm:col-span-1">
+              <span class="text-lg font-semibold">{{ getDigitalQuantity(ticket) }}×</span>
+            </div>
+
+            <!-- Column 3: Price per ticket - Hidden on mobile -->
+            <div class="text-xs text-gray-600 text-right max-sm:hidden flex items-center justify-end">
+              {{ formatPrice(ticket.price) }} / Stk.
+            </div>
+
+            <!-- Column 4: Total price -->
+            <div class="text-lg font-bold text-gray-600 text-right flex items-center justify-end max-sm:col-span-1">
+              {{ formatPrice(ticket.price * getDigitalQuantity(ticket)) }}
+            </div>
+          </div>
+          }
+
+          <!-- Physical Tickets Row -->
+          @if (ticket.physicalQuantity > 0) {
+          <div class="grid grid-cols-4 gap-4 items-center border-b pb-4 max-sm:grid-cols-3">
+            <!-- Column 1: Ticket name -->
+            <div class="flex flex-col gap-1 max-sm:col-span-1">
+              <div class="font-medium">
+                {{ getTicketTypeName(ticket.type) }}
+              </div>
+              <p class="text-sm italic text-gray-600">Physische Karte</p>
+            </div>
+
+            <!-- Column 2: Quantity -->
+            <div class="flex items-center justify-center max-sm:col-span-1">
+              <span class="text-lg font-semibold">{{ ticket.physicalQuantity }}×</span>
+            </div>
+
+            <!-- Column 3: Price per ticket - Hidden on mobile -->
+            <div class="text-xs text-gray-600 text-right max-sm:hidden flex items-center justify-end">
+              {{ formatPrice(ticket.price + additionalChargeForPhysicalTicket()) }} / Stk.
+            </div>
+
+            <!-- Column 4: Total price -->
+            <div class="text-lg font-bold text-gray-600 text-right flex items-center justify-end max-sm:col-span-1">
+              {{ formatPrice((ticket.price + additionalChargeForPhysicalTicket()) * ticket.physicalQuantity) }}
+            </div>
+          </div>
+          }
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Seats Section -->
+      @if(seats().length > 0) {
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-3 text-primary">Tische & Plätze</h3>
+        <div class="space-y-4">
+          @for(tableGroup of getGroupedSeatsByTable(); track tableGroup.tableName) {
+          <div class="grid grid-cols-4 gap-4 items-center border-b pb-4 max-sm:grid-cols-3">
+            <!-- Column 1: Table name -->
+            <div class="font-medium max-sm:col-span-1">
+              Tisch {{ tableGroup.tableName }} - {{ tableGroup.seats.length }} Plätze
+            </div>
+
+            <!-- Column 2: Quantity display -->
+            <div class="flex items-center justify-center max-sm:col-span-1">
+              <span class="text-lg font-semibold">{{ tableGroup.seats.length }}×</span>
+            </div>
+
+            <!-- Column 3: Price calculation (without solution) - Hidden on mobile -->
+            <div class="text-xs text-gray-600 text-right max-sm:hidden flex items-center justify-end">
+              {{ getPriceCalculationWithoutSolution(tableGroup.seats) }}
+            </div>
+
+            <!-- Column 4: Price solution -->
+            <div class="text-lg font-bold text-gray-600 text-right flex items-center justify-end max-sm:col-span-1">
+              {{ formatPrice(tableGroup.totalPrice) }}
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Total Summary -->
+      <div class="mt-6 p-4 bg-base-200 rounded-lg">
+        <div class="flex justify-between font-semibold text-xl">
+          <span>Gesamt:</span>
+          <span>{{ formatPrice(getTotalPrice()) }}</span>
+        </div>
+      </div>
+
+      <!-- Customer Information -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <h4 class="font-medium mb-2">Kunde</h4>
+          <p>
+            {{ order()!.customer.firstName }} {{ order()!.customer.lastName }}
+          </p>
+          <p>{{ order()!.customer.mailAddress }}</p>
+          <p>{{ order()!.customer.phoneNumber }}</p>
+        </div>
+        <div>
+          <h4 class="font-medium mb-2">Lieferadresse</h4>
+          <p>
+            {{ order()!.customer.street }} {{ order()!.customer.streetNumber }}
+          </p>
+          <p>{{ order()!.customer.zipCode }} {{ order()!.customer.town }}</p>
+        </div>
+      </div>
+
+      <!-- Next Steps -->
+      <div class="mb-6">
+        <h4 class="font-medium mb-2">Nächste Schritte</h4>
+        <ul class="list-disc list-inside space-y-2 text-gray-700">
+          <li>
+            Eine Bestätigungs-E-Mail wurde an
+            {{ order()!.customer.mailAddress }} gesendet
+          </li>
+          <li>
+            Sie müssen diese nun nur noch innerhalb von 24 Stunden in einer
+            Ihnen zugesandten E-Mail bestätigen.
+          </li>
+        </ul>
+      </div>
+
+      <div class="text-center mt-8">
+        <button class="btn btn-primary" (click)="returnToHome()">
+          Zur Startseite
+        </button>
+      </div>
+
+      <div class="text-center mt-8">
+        <button class="btn btn-primary" (click)="goToOrderList()">
+          Zur Bestellungsliste
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
